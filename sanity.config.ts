@@ -60,11 +60,17 @@ export default defineConfig({
             
             S.divider(),
             
-            // Products — standard list view
-            S.listItem()
-              .title('Products')
-              .schemaType('product')
-              .child(S.documentTypeList('product')),
+            /**
+             * Products with drag-and-drop ordering
+             * Uses the @sanity/orderable-document-list plugin
+             * Requires orderRank field in the product schema
+             */
+            orderableDocumentListDeskItem({
+              type: 'product',
+              title: 'Products',
+              S,
+              context,
+            }),
             
             // About — typically just one document
             S.listItem()

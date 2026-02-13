@@ -16,6 +16,14 @@ export const product = defineType({
   type: 'document',
   
   fields: [
+    // Order rank for drag-and-drop ordering in Studio
+    defineField({
+      name: 'orderRank',
+      title: 'Order Rank',
+      type: 'string',
+      hidden: true,
+    }),
+
     defineField({
       name: 'title',
       title: 'Title',
@@ -84,7 +92,9 @@ export const product = defineType({
       type: 'string',
       options: {
         list: [
-          {title: 'Print', value: 'print'},
+          {title: 'Prints', value: 'prints'},
+          {title: 'Postcards', value: 'postcards'},
+          {title: 'Tapestries', value: 'tapestries'},
           {title: 'Digital', value: 'digital'},
           {title: 'Merchandise', value: 'merchandise'},
         ],
