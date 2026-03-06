@@ -81,6 +81,17 @@ export default defineConfig({
             S.divider(),
             
             /**
+             * Orders from online purchases
+             * Created automatically via Stripe webhook
+             */
+            S.listItem()
+              .title('Orders')
+              .schemaType('order')
+              .child(S.documentTypeList('order')),
+            
+            S.divider(),
+            
+            /**
              * Blog schemas (for future use)
              * These came with the template and are ready
              * for when you want to add a blog section
