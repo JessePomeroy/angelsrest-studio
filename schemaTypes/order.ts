@@ -1,4 +1,6 @@
-export default {
+import { defineType } from 'sanity'
+
+export const order = defineType({
   name: 'order',
   type: 'document',
   title: 'Order',
@@ -108,4 +110,4 @@ export default {
       media: 'items.0.image'
     }
   }
-}
+})
