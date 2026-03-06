@@ -65,6 +65,12 @@ export const order = defineType({
       title: 'Total (cents)'
     },
     {
+      name: 'stripeFees',
+      type: 'number',
+      title: 'Stripe Fees (cents)',
+      description: 'Transaction fees deducted by Stripe'
+    },
+    {
       name: 'currency',
       type: 'string',
       title: 'Currency',
