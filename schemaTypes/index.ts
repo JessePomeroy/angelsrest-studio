@@ -20,12 +20,14 @@ import author from './author'
 import {gallery} from './gallery'
 import {product} from './product'
 import {about} from './about'
+import {order} from './order'
 
 export const schemaTypes = [
   // === Custom Content Types ===
   gallery,   // Photo galleries with ordering
   product,   // Shop products
   about,     // About page content
+  order,     // Order history
   
   // === Blog Content Types ===
   // Ready for future blog implementation
