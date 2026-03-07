@@ -83,11 +83,65 @@ export default defineConfig({
             /**
              * Orders from online purchases
              * Created automatically via Stripe webhook
+             * Organized by time period for easy browsing
              */
             S.listItem()
               .title('Orders')
               .schemaType('order')
-              .child(S.documentTypeList('order')),
+              .child(
+                S.list()
+                  .title('Orders')
+                  .items([
+                    S.listItem()
+                      .title('All Orders')
+                      .child(
+                        S.documentTypeList('order')
+                          .title('All Orders')
+                          .defaultOrdering([{field: 'createdAt', direction: 'desc'}])
+                      ),
+                    S.divider(),
+                    S.listItem()
+                      .title('Today')
+                      .child(
+                        S.documentList()
+                          .title('Today')
+                          .schemaType('order')
+                          .filter('_type == "order" && createdAt >= $start')
+                          .params({start: new Date(new Date().setHours(0,0,0,0)).toISOString()})
+                          .defaultOrdering([{field: 'createdAt', direction: 'desc'}])
+                      ),
+                    S.listItem()
+                      .title('This Week')
+                      .child(
+                        S.documentList()
+                          .title('This Week')
+                          .schemaType('order')
+                          .filter('_type == "order" && createdAt >= $start')
+                          .params({start: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()})
+                          .defaultOrdering([{field: 'createdAt', direction: 'desc'}])
+                      ),
+                    S.listItem()
+                      .title('This Month')
+                      .child(
+                        S.documentList()
+                          .title('This Month')
+                          .schemaType('order')
+                          .filter('_type == "order" && createdAt >= $start')
+                          .params({start: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()})
+                          .defaultOrdering([{field: 'createdAt', direction: 'desc'}])
+                      ),
+                    S.listItem()
+                      .title('This Year')
+                      .child(
+                        S.documentList()
+                          .title('This Year')
+                          .schemaType('order')
+                          .filter('_type == "order" && createdAt >= $start')
+                          .params({start: new Date(new Date().getFullYear(), 0, 1).toISOString()})
+                          .defaultOrdering([{field: 'createdAt', direction: 'desc'}])
+                      ),
+                  ])
+              ),
             
             S.divider(),
             

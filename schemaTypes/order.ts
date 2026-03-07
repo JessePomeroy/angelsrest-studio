@@ -115,11 +115,42 @@ export const order = defineType({
       title: 'Last Updated'
     }
   ],
+  orderings: [
+    {
+      title: 'Order Date (Newest)',
+      name: 'createdAtDesc',
+      by: [{ field: 'createdAt', direction: 'desc' }]
+    },
+    {
+      title: 'Order Date (Oldest)',
+      name: 'createdAtAsc',
+      by: [{ field: 'createdAt', direction: 'asc' }]
+    },
+    {
+      title: 'Order Number',
+      name: 'orderNumberDesc',
+      by: [{ field: 'orderNumber', direction: 'desc' }]
+    },
+    {
+      title: 'Status',
+      name: 'statusAsc',
+      by: [{ field: 'status', direction: 'asc' }]
+    }
+  ],
   preview: {
     select: {
       title: 'orderNumber',
       subtitle: 'customerEmail',
+      status: 'status',
+      total: 'total',
       media: 'items.0.image'
+    },
+    prepare({ title, subtitle, status, total }) {
+      const formattedTotal = total ? `$${(total / 100).toFixed(2)}` : ''
+      return {
+        title: `${title || 'No order number'}`,
+        subtitle: `${status || 'new'} · ${formattedTotal} · ${subtitle || ''}`,
+      }
     }
   }
 })
