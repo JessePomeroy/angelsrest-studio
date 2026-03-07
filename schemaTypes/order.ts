@@ -71,6 +71,12 @@ export const order = defineType({
       description: 'Transaction fees deducted by Stripe'
     },
     {
+      name: 'stripePaymentIntentId',
+      type: 'string',
+      title: 'Stripe Payment Intent ID',
+      description: 'Used to look up payment details'
+    },
+    {
       name: 'currency',
       type: 'string',
       title: 'Currency',
