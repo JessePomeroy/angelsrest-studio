@@ -65,12 +65,35 @@ export default defineConfig({
              * Uses the @sanity/orderable-document-list plugin
              * Requires orderRank field in the product schema
              */
-            orderableDocumentListDeskItem({
-              type: 'product',
-              title: 'Products',
-              S,
-              context,
-            }),
+            S.listItem()
+              .title('Products')
+              .schemaType('product')
+              .child(
+                S.list()
+                  .title('Products')
+                  .items([
+                    S.listItem()
+                      .title('All Products')
+                      .child(
+                        S.documentTypeList('product')
+                          .title('All Products')
+                          .defaultOrdering([{field: 'orderRank', direction: 'asc'}])
+                      ),
+                    S.divider(),
+                    ...['prints', 'postcards', 'tapestries', 'digital', 'merchandise'].map((cat) =>
+                      S.listItem()
+                        .title(cat.charAt(0).toUpperCase() + cat.slice(1))
+                        .child(
+                          S.documentList()
+                            .title(cat.charAt(0).toUpperCase() + cat.slice(1))
+                            .schemaType('product')
+                            .filter('_type == "product" && category == $category')
+                            .params({category: cat})
+                            .defaultOrdering([{field: 'orderRank', direction: 'asc'}])
+                        )
+                    ),
+                  ])
+              ),
             
             // About — typically just one document
             S.listItem()
