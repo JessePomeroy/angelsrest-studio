@@ -77,6 +77,36 @@ export const order = defineType({
       description: 'Used to look up payment details'
     },
     {
+      name: 'lumaprintsOrderNumber',
+      type: 'string',
+      title: 'LumaPrints Order Number',
+      description: 'Order ID from LumaPrints (if fulfilled via LumaPrints)'
+    },
+    {
+      name: 'trackingNumber',
+      type: 'string',
+      title: 'Tracking Number',
+      description: 'Shipping tracking number from carrier'
+    },
+    {
+      name: 'trackingUrl',
+      type: 'url',
+      title: 'Tracking URL',
+      description: 'Link to track shipment'
+    },
+    {
+      name: 'fulfillmentType',
+      type: 'string',
+      title: 'Fulfillment Type',
+      options: {
+        list: [
+          { title: 'LumaPrints', value: 'lumaprints' },
+          { title: 'Self-fulfilled', value: 'self' },
+        ]
+      },
+      initialValue: 'self'
+    },
+    {
       name: 'currency',
       type: 'string',
       title: 'Currency',

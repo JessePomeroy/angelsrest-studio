@@ -101,6 +101,57 @@ export const product = defineType({
       },
     }),
 
+    // Fulfillment type — determines if order is auto-sent to LumaPrints or handled manually
+    defineField({
+      name: 'fulfillmentType',
+      title: 'Fulfillment Type',
+      type: 'string',
+      options: {
+        list: [
+          {title: 'LumaPrints', value: 'lumaprints'},
+          {title: 'Self-fulfilled', value: 'self'},
+        ],
+      },
+      initialValue: 'self',
+      description: 'LumaPrints = auto-submit when order is placed. Self = handle fulfillment manually.',
+    }),
+
+    // LumaPrints subcategory ID — which product type (only needed if fulfillmentType = lumaprints)
+    defineField({
+      name: 'lumaprintsSubcategoryId',
+      title: 'LumaPrints Subcategory ID',
+      type: 'number',
+      description: 'e.g., 103001 for Archival Matte Fine Art Paper, 103007 for Glossy',
+      hidden: ({ parent }) => parent?.fulfillmentType !== 'lumaprints',
+    }),
+
+    // Print dimensions in inches (only needed if fulfillmentType = lumaprints)
+    defineField({
+      name: 'printWidth',
+      title: 'Print Width (inches)',
+      type: 'number',
+      description: 'Width in inches, e.g., 8 for 8x10',
+      hidden: ({ parent }) => parent?.fulfillmentType !== 'lumaprints',
+    }),
+
+    defineField({
+      name: 'printHeight',
+      title: 'Print Height (inches)',
+      type: 'number',
+      description: 'Height in inches, e.g., 10 for 8x10',
+      hidden: ({ parent }) => parent?.fulfillmentType !== 'lumaprints',
+    }),
+
+    // LumaPrints option IDs (e.g., bleed size)
+    defineField({
+      name: 'lumaprintsOptions',
+      title: 'LumaPrints Option IDs',
+      type: 'array',
+      of: [{ type: 'number' }],
+      description: 'Option IDs to apply, e.g., 36 for 0.25in bleed. Leave empty for defaults.',
+      hidden: ({ parent }) => parent?.fulfillmentType !== 'lumaprints',
+    }),
+
     // Inventory status — hide out-of-stock items or show "Sold Out"
     defineField({
       name: 'inStock',
