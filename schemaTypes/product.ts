@@ -1,9 +1,9 @@
 /**
  * Product Schema
- * 
+ *
  * Defines the structure for shop products.
  * Products have images, pricing, and inventory status.
- * 
+ *
  * Used on: /shop, /shop/[slug]
  */
 
@@ -14,7 +14,7 @@ export const product = defineType({
   name: 'product',
   title: 'Product',
   type: 'document',
-  
+
   fields: [
     // Order rank for drag-and-drop ordering in Studio
     defineField({
@@ -113,7 +113,8 @@ export const product = defineType({
         ],
       },
       initialValue: 'self',
-      description: 'LumaPrints = auto-submit when order is placed. Self = handle fulfillment manually.',
+      description:
+        'LumaPrints = auto-submit when order is placed. Self = handle fulfillment manually.',
     }),
 
     // Available paper types for LumaPrints (shown as options on product page)
@@ -121,67 +122,74 @@ export const product = defineType({
       name: 'availablePapers',
       title: 'Available Paper Types',
       type: 'array',
-      of: [{
-        type: 'object',
-        fields: [
-          { 
-            name: 'name', 
-            title: 'Paper Type', 
-            type: 'string',
-            options: {
-              list: [
-                { title: 'Archival Matte 8×10', value: 'Archival Matte 8×10' },
-                { title: 'Archival Matte 4×6', value: 'Archival Matte 4×6' },
-                { title: 'Glossy 8×10', value: 'Glossy 8×10' },
-                { title: 'Glossy 4×6', value: 'Glossy 4×6' },
-              ]
-            }
-          },
-          { 
-            name: 'subcategoryId', 
-            title: 'LumaPrints Subcategory', 
-            type: 'string',
-            options: {
-              list: [
-                { title: 'Archival Matte (103001)', value: '103001' },
-                { title: 'Glossy (103007)', value: '103007' },
-              ]
-            }
-          },
-          { 
-            name: 'width', 
-            title: 'Width (in)', 
-            type: 'number',
-            options: {
-              list: [
-                { title: '4', value: 4 },
-                { title: '8', value: 8 },
-                { title: '10', value: 10 },
-                { title: '12', value: 12 },
-                { title: '16', value: 16 },
-              ]
-            }
-          },
-          { 
-            name: 'height', 
-            title: 'Height (in)', 
-            type: 'number',
-            options: {
-              list: [
-                { title: '4', value: 4 },
-                { title: '6', value: 6 },
-                { title: '8', value: 8 },
-                { title: '10', value: 10 },
-                { title: '12', value: 12 },
-              ]
-            }
-          },
-        ]
-      }],
+      of: [
+        {
+          type: 'object',
+          fields: [
+            {
+              name: 'name',
+              title: 'Paper Type',
+              type: 'string',
+              options: {
+                list: [
+                  {title: 'Archival Matte 8×10', value: 'Archival Matte 8×10'},
+                  {title: 'Archival Matte 4×6', value: 'Archival Matte 4×6'},
+                  {title: 'Glossy 8×10', value: 'Glossy 8×10'},
+                  {title: 'Glossy 4×6', value: 'Glossy 4×6'},
+                ],
+              },
+            },
+            {
+              name: 'subcategoryId',
+              title: 'LumaPrints Subcategory',
+              type: 'string',
+              options: {
+                list: [
+                  {title: 'Archival Matte (103001)', value: '103001'},
+                  {title: 'Glossy (103007)', value: '103007'},
+                ],
+              },
+            },
+            {
+              name: 'width',
+              title: 'Width (in)',
+              type: 'number',
+              options: {
+                list: [
+                  {title: '4', value: 4},
+                  {title: '5', value: 5},
+                  {title: '6', value: 6},
+                  {title: '8', value: 8},
+                  {title: '10', value: 10},
+                  {title: '12', value: 12},
+                  {title: '16', value: 16},
+                ],
+              },
+            },
+            {
+              name: 'height',
+              title: 'Height (in)',
+              type: 'number',
+              options: {
+                list: [
+                  {title: '4', value: 4},
+                  {title: '6', value: 6},
+                  {title: '9', value: 9},
+                  {title: '8', value: 8},
+                  {title: '10', value: 10},
+                  {title: '12', value: 12},
+                  {title: '18', value: 18},
+                  {title: '24', value: 24},
+                ],
+              },
+            },
+          ],
+        },
+      ],
       options: {
-        modal: { type: 'popover' }
+        modal: {type: 'popover'},
       },
-      hidden: ({ parent }) => parent?.fulfillmentType !== 'lumaprints',
+      hidden: ({parent}) => parent?.fulfillmentType !== 'lumaprints',
       description: 'Add paper options. Select from predefined sizes and paper types.',
     }),
 
