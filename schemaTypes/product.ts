@@ -166,10 +166,11 @@ export const product = defineType({
               name: 'name',
               price: 'price',
             },
-            prepare({name, price}: {name: string; price: number}) {
-              const displayName = name?.split('|')[0] || 'Paper option'
+            prepare(value: any) {
+              const name = value?.name?.split('|')[0] || 'Paper option'
+              const price = value?.price
               return {
-                title: displayName,
+                title: name,
                 subtitle: price ? `$${price}` : 'No price set',
               }
             },
