@@ -116,40 +116,25 @@ export const product = defineType({
       description: 'LumaPrints = auto-submit when order is placed. Self = handle fulfillment manually.',
     }),
 
-    // LumaPrints subcategory ID — which product type (only needed if fulfillmentType = lumaprints)
+    // Available paper types for LumaPrints (shown as options on product page)
     defineField({
-      name: 'lumaprintsSubcategoryId',
-      title: 'LumaPrints Subcategory ID',
-      type: 'number',
-      description: 'e.g., 103001 for Archival Matte Fine Art Paper, 103007 for Glossy',
-      hidden: ({ parent }) => parent?.fulfillmentType !== 'lumaprints',
-    }),
-
-    // Print dimensions in inches (only needed if fulfillmentType = lumaprints)
-    defineField({
-      name: 'printWidth',
-      title: 'Print Width (inches)',
-      type: 'number',
-      description: 'Width in inches, e.g., 8 for 8x10',
-      hidden: ({ parent }) => parent?.fulfillmentType !== 'lumaprints',
-    }),
-
-    defineField({
-      name: 'printHeight',
-      title: 'Print Height (inches)',
-      type: 'number',
-      description: 'Height in inches, e.g., 10 for 8x10',
-      hidden: ({ parent }) => parent?.fulfillmentType !== 'lumaprints',
-    }),
-
-    // LumaPrints option IDs (e.g., bleed size)
-    defineField({
-      name: 'lumaprintsOptions',
-      title: 'LumaPrints Option IDs',
+      name: 'availablePapers',
+      title: 'Available Paper Types',
       type: 'array',
-      of: [{ type: 'number' }],
-      description: 'Option IDs to apply, e.g., 36 for 0.25in bleed. Leave empty for defaults.',
+      of: [{
+        type: 'object',
+        fields: [
+          { name: 'name', title: 'Display Name', type: 'string', initialValue: 'Archival Matte' },
+          { name: 'subcategoryId', title: 'LumaPrints Subcategory ID', type: 'number', initialValue: 103001 },
+          { name: 'width', title: 'Print Width (inches)', type: 'number', initialValue: 8 },
+          { name: 'height', title: 'Print Height (inches)', type: 'number', initialValue: 10 },
+        ]
+      }],
+      options: {
+        modal: { type: 'popover' }
+      },
       hidden: ({ parent }) => parent?.fulfillmentType !== 'lumaprints',
+      description: 'Add paper types you want to offer. Customer picks from these on the product page.',
     }),
 
     // Inventory status — hide out-of-stock items or show "Sold Out"
