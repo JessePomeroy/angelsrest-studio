@@ -143,7 +143,27 @@ export const product = defineType({
                 ],
               },
             },
+            {
+              name: 'price',
+              title: 'Price (USD)',
+              type: 'number',
+              description: 'Price for this paper type and size. Overrides the base product price.',
+              validation: (rule: any) => rule.required().positive(),
+            },
           ],
+          preview: {
+            select: {
+              name: 'name',
+              price: 'price',
+            },
+            prepare({name, price}: {name: string; price: number}) {
+              const displayName = name?.split('|')[0] || 'Paper option'
+              return {
+                title: displayName,
+                subtitle: price ? `$${price}` : 'No price set',
+              }
+            },
+          },
         },
       ],
       options: {
