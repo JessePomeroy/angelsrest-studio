@@ -101,6 +101,16 @@ export const product = defineType({
       },
     }),
 
+    // Collection reference - only for Prints category
+    defineField({
+      name: 'collection',
+      title: 'Print Collection',
+      type: 'reference',
+      to: [{type: 'printCollection'}],
+      hidden: ({parent}) => parent?.category !== 'prints',
+      description: 'Link this print to a collection (shown on /shop/prints/[slug])',
+    }),
+
     // Fulfillment type — determines if order is auto-sent to LumaPrints or handled manually
     defineField({
       name: 'fulfillmentType',
