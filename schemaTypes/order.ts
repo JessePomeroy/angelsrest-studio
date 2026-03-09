@@ -82,6 +82,24 @@ export const order = defineType({
       title: 'LumaPrints Order Number',
       description: 'Order ID from LumaPrints (if fulfilled via LumaPrints)'
     },
+    // Paper details selected at checkout
+    {
+      name: 'paperName',
+      type: 'string',
+      title: 'Paper Type',
+      description: 'Selected paper type (e.g., Archival Matte 4x6)'
+    },
+    {
+      name: 'paperSubcategoryId',
+      type: 'string',
+      title: 'LumaPrints Subcategory ID',
+    },
+    {
+      name: 'paperSize',
+      type: 'string',
+      title: 'Paper Size',
+      description: 'Selected size (e.g., 4x6)'
+    },
     {
       name: 'trackingNumber',
       type: 'string',
