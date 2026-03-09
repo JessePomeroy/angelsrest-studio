@@ -124,17 +124,65 @@ export const product = defineType({
       of: [{
         type: 'object',
         fields: [
-          { name: 'name', title: 'Display Name', type: 'string' },
-          { name: 'subcategoryId', title: 'LumaPrints Subcategory ID', type: 'number' },
-          { name: 'width', title: 'Print Width (inches)', type: 'number' },
-          { name: 'height', title: 'Print Height (inches)', type: 'number' },
+          { 
+            name: 'name', 
+            title: 'Paper Type', 
+            type: 'string',
+            options: {
+              list: [
+                { title: 'Archival Matte 8×10', value: 'Archival Matte 8×10' },
+                { title: 'Archival Matte 4×6', value: 'Archival Matte 4×6' },
+                { title: 'Glossy 8×10', value: 'Glossy 8×10' },
+                { title: 'Glossy 4×6', value: 'Glossy 4×6' },
+              ]
+            }
+          },
+          { 
+            name: 'subcategoryId', 
+            title: 'LumaPrints Subcategory', 
+            type: 'string',
+            options: {
+              list: [
+                { title: 'Archival Matte (103001)', value: '103001' },
+                { title: 'Glossy (103007)', value: '103007' },
+              ]
+            }
+          },
+          { 
+            name: 'width', 
+            title: 'Width (in)', 
+            type: 'number',
+            options: {
+              list: [
+                { title: '4', value: 4 },
+                { title: '8', value: 8 },
+                { title: '10', value: 10 },
+                { title: '12', value: 12 },
+                { title: '16', value: 16 },
+              ]
+            }
+          },
+          { 
+            name: 'height', 
+            title: 'Height (in)', 
+            type: 'number',
+            options: {
+              list: [
+                { title: '4', value: 4 },
+                { title: '6', value: 6 },
+                { title: '8', value: 8 },
+                { title: '10', value: 10 },
+                { title: '12', value: 12 },
+              ]
+            }
+          },
         ]
       }],
       options: {
         modal: { type: 'popover' }
       },
       hidden: ({ parent }) => parent?.fulfillmentType !== 'lumaprints',
-      description: 'Add paper types you want to offer. Options: Archival Matte (103001), Glossy (103007). Sizes: 4x6, 8x10.',
+      description: 'Add paper options. Select from predefined sizes and paper types.',
     }),
 
     // Inventory status — hide out-of-stock items or show "Sold Out"
