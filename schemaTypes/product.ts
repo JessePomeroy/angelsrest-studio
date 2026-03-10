@@ -81,8 +81,8 @@ export const product = defineType({
       name: 'price',
       title: 'Price',
       type: 'number',
-      validation: (rule) => rule.required().positive(),
-      description: 'Price in USD',
+      validation: (rule) => rule.positive(),
+      description: 'Base price in USD. Optional if paper-specific prices are set.',
     }),
 
     // Product category for filtering
