@@ -7,6 +7,7 @@
 
 import {defineField, defineType} from 'sanity'
 import {orderRankField} from '@sanity/orderable-document-list'
+import {paperOptions} from './constants/paperOptions'
 
 export const printSet = defineType({
   name: 'printSet',
@@ -125,16 +126,7 @@ export const printSet = defineType({
               title: 'Paper Name',
               type: 'string',
               options: {
-                list: [
-                  {title: 'Archival Matte 4×6', value: 'Archival Matte 4×6|103001|4|6'},
-                  {title: 'Archival Matte 6×9', value: 'Archival Matte 6×9|103001|6|9'},
-                  {title: 'Archival Matte 8×12', value: 'Archival Matte 8×12|103001|8|12'},
-                  {title: 'Archival Matte 12×18', value: 'Archival Matte 12×18|103001|12|18'},
-                  {title: 'Glossy 4×6', value: 'Glossy 4×6|103007|4|6'},
-                  {title: 'Glossy 6×9', value: 'Glossy 6×9|103007|6|9'},
-                  {title: 'Glossy 8×12', value: 'Glossy 8×12|103007|8|12'},
-                  {title: 'Glossy 12×18', value: 'Glossy 12×18|103007|12|18'},
-                ],
+                list: paperOptions,
               },
             },
             {
