@@ -35,6 +35,14 @@ export const printCollection = defineType({
     }),
 
     defineField({
+      name: 'parent',
+      title: 'Parent Collection',
+      type: 'reference',
+      to: [{type: 'printCollection'}],
+      description: 'Leave empty for top-level collections. Reference a parent to nest this collection.',
+    }),
+
+    defineField({
       name: 'coverImage',
       title: 'Cover Image',
       type: 'image',
