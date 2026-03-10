@@ -43,7 +43,7 @@ export const printCollection = defineType({
     }),
 
     defineField({
-      name: 'coverImage',
+      name: 'previewImage',
       title: 'Cover Image',
       type: 'image',
       options: {
@@ -76,7 +76,7 @@ export const printCollection = defineType({
   preview: {
     select: {
       title: 'title',
-      media: 'coverImage',
+      media: 'previewImage',
     },
   },
 })

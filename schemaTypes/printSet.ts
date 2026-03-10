@@ -43,7 +43,7 @@ export const printSet = defineType({
     }),
 
     defineField({
-      name: 'coverImage',
+      name: 'previewImage',
       title: 'Cover Image',
       type: 'image',
       options: {
@@ -180,7 +180,7 @@ export const printSet = defineType({
   preview: {
     select: {
       title: 'title',
-      media: 'coverImage',
+      media: 'previewImage',
       subtitle: 'price',
     },
     prepare({title, media, subtitle}: any) {
