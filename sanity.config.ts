@@ -106,6 +106,16 @@ export default defineConfig({
               context,
             }),
 
+            /**
+             * Print Sets - bundles of multiple prints sold together
+             */
+            orderableDocumentListDeskItem({
+              type: 'printSet',
+              title: 'Print Sets',
+              S,
+              context,
+            }),
+
             // About — typically just one document
             S.listItem()
               .title('About')
