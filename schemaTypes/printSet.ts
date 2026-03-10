@@ -35,6 +35,14 @@ export const printSet = defineType({
     }),
 
     defineField({
+      name: 'parent',
+      title: 'Parent Collection',
+      type: 'reference',
+      to: [{type: 'printCollection'}],
+      description: 'Optional: link this set to a print collection',
+    }),
+
+    defineField({
       name: 'coverImage',
       title: 'Cover Image',
       type: 'image',
