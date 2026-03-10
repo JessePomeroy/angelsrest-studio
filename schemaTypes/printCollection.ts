@@ -56,7 +56,6 @@ export const printCollection = defineType({
           title: 'Alternative text',
         },
       ],
-      validation: (rule) => rule.required(),
     }),
 
     defineField({
