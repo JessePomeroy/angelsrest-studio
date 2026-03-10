@@ -44,7 +44,7 @@ export const printSet = defineType({
 
     defineField({
       name: 'previewImage',
-      title: 'Cover Image',
+      title: 'Preview Image',
       type: 'image',
       options: {
         hotspot: true,
