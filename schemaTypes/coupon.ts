@@ -1,7 +1,18 @@
 /**
  * Coupon Schema
  *
- * Defines discount codes that can be applied at checkout.
+ * Discount codes applied at checkout. Validated server-side in the checkout API.
+ *
+ * Coupons are stored in Sanity (not Stripe) because products use dynamic
+ * `price_data` in Stripe, which doesn't support Stripe's native coupon system.
+ * Discounts are calculated server-side and applied to `unit_amount` before
+ * creating the Stripe checkout session.
+ *
+ * Supports:
+ * - Percentage or fixed-amount discounts
+ * - Category restrictions (e.g., tapestries only)
+ * - Product-specific restrictions (references to product documents)
+ * - Usage limits with automatic tracking
  */
 
 import {defineField, defineType} from 'sanity'

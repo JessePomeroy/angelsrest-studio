@@ -1,8 +1,14 @@
 /**
  * Print Set Schema
  *
- * A curated bundle/set of prints sold together.
- * Unlike individual products, a set has multiple images.
+ * A curated bundle/set of prints sold together as one purchase.
+ * Unlike individual products, a set contains multiple images — all of which
+ * are sent to LumaPrints as separate print items in one order.
+ *
+ * Each set can have its own paper options with per-paper pricing.
+ * Sets can optionally belong to a print collection via the `parent` field.
+ *
+ * Used on: /shop (top-level sets), /shop/sets/[slug] (detail page)
  */
 
 import {defineField, defineType} from 'sanity'

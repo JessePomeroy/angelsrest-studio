@@ -1,8 +1,22 @@
 /**
  * Paper Options for LumaPrints
- * 
- * Shared paper options used in product and printSet schemas.
- * Format: "Display Name|subcategoryId|width|height"
+ *
+ * Shared paper options used in both product and printSet schemas.
+ * Single source of truth — add/remove paper types here.
+ *
+ * Value format: "Display Name|subcategoryId|width|height"
+ * Example: "Archival Matte 4×6|103001|4|6"
+ *
+ * The pipe-delimited value is parsed by `parsePaperOption()` in the frontend
+ * (src/lib/utils/images.ts) to extract subcategoryId, width, and height
+ * for LumaPrints order submission.
+ *
+ * Subcategory IDs (LumaPrints Fine Art Paper category 103):
+ * - 103001: Archival Matte
+ * - 103003: Cold Press / Fine Art Rag
+ * - 103007: Glossy
+ *
+ * Price is stored as a separate field on the paper object, not in this string.
  */
 
 export const paperOptions = [

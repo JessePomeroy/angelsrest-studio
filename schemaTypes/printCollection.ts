@@ -1,8 +1,13 @@
 /**
  * Print Collection Schema
  *
- * Defines collections of prints that can be sold as sets.
- * Used on: /shop/prints/[slug]
+ * Hierarchical grouping of prints. Collections can be nested
+ * via the optional `parent` reference (e.g., "Film Photography" → "35mm").
+ *
+ * Top-level collections (no parent) appear on the main shop page under Prints.
+ * Nested collections appear inside their parent's detail page.
+ *
+ * Used on: /shop (top-level), /shop/prints/[slug] (detail + nested)
  */
 
 import {defineField, defineType} from 'sanity'
