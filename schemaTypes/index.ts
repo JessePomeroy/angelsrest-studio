@@ -20,6 +20,7 @@ import author from './author'
 import {gallery} from './gallery'
 import {product} from './product'
 import {printCollection} from './printCollection'
+import {coupon} from './coupon'
 import {about} from './about'
 import {order} from './order'
 
@@ -27,6 +28,7 @@ export const schemaTypes = [
   // === Custom Content Types ===
   gallery,   // Photo galleries with ordering
   printCollection, // Print collections for shop
+  coupon,    // Discount codes
   product,   // Shop products
   about,     // About page content
   order,     // Order history
