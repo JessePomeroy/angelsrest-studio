@@ -94,7 +94,18 @@ export default defineConfig({
                     ),
                   ])
               ),
-            
+
+            /**
+             * Print Collections for the shop
+             * Organize prints into sets/collections
+             */
+            orderableDocumentListDeskItem({
+              type: 'printCollection',
+              title: 'Print Collections',
+              S,
+              context,
+            }),
+
             // About — typically just one document
             S.listItem()
               .title('About')
@@ -165,6 +176,16 @@ export default defineConfig({
                       ),
                   ])
               ),
+            
+            S.divider(),
+            
+            /**
+             * Coupons / Discount codes
+             */
+            S.listItem()
+              .title('Coupons')
+              .schemaType('coupon')
+              .child(S.documentTypeList('coupon').title('Coupons')),
             
             S.divider(),
             
