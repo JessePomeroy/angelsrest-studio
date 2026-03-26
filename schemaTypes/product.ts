@@ -176,6 +176,26 @@ export const product = defineType({
       description: 'Add paper options. All sizes are 2:3 ratio for your images.',
     }),
 
+    // Digital product file (only shown for digital category)
+    defineField({
+      name: 'digitalFile',
+      title: 'Digital Download File',
+      type: 'file',
+      description: 'Upload the zip/file buyers will download after purchase',
+      hidden: ({parent}) => parent?.category !== 'digital',
+      options: {
+        accept: '.zip,.tar.gz,.css,.js',
+      },
+    }),
+
+    defineField({
+      name: 'digitalFileVersion',
+      title: 'Version',
+      type: 'string',
+      description: 'e.g., "1.0.0" - shown to buyers so they know if there are updates',
+      hidden: ({parent}) => parent?.category !== 'digital',
+    }),
+
     // Inventory status — hide out-of-stock items or show "Sold Out"
     defineField({
       name: 'inStock',

@@ -120,6 +120,7 @@ export const order = defineType({
         list: [
           { title: 'LumaPrints', value: 'lumaprints' },
           { title: 'Self-fulfilled', value: 'self' },
+          { title: 'Digital', value: 'digital' },
         ]
       },
       initialValue: 'self'
