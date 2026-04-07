@@ -1,30 +1,85 @@
 # AGENTS.md — angelsrest-studio
 
-Sanity Studio for angelsrest.online. Manages all CMS content: galleries, products, posts, authors, about page.
+Sanity Studio for angelsrest.online. Manages all CMS content and serves as the content layer for the photographer CRM platform.
 
 ---
 
 ## Stack
 
-- **CMS:** Sanity Studio v3
+- **CMS:** Sanity Studio v3 (package: sanity 5.13.0+)
 - **Project ID:** `n7rvza4g`
 - **Dataset:** `production`
-- **Plugins:** `@sanity/orderable-document-list`, `@sanity/vision`
-- **Linting:** ESLint (not Biome — this repo uses ESLint)
+- **Plugins:** `@sanity/orderable-document-list`, `@sanity/vision`, `sanity/presentation`
+- **Linting:** Biome (check + format)
+- **Dependencies:** `@sanity/icons` (for schema icons)
 
 ---
 
 ## Schema Types
 
-| Type | Purpose |
-|---|---|
-| `gallery` | Photo galleries (drag-and-drop ordered via `orderRank`) |
-| `product` | Shop products (drag-and-drop ordered via `orderRank`) |
-| `about` | Single about page document |
-| `post` | Blog posts (future use) |
-| `author` | Blog authors (future use) |
-| `category` | Blog categories (future use) |
-| `blockContent` | Portable Text block content definition |
+| Type | Purpose | Notes |
+|---|---|---|
+| `gallery` | Photo galleries | Orderable, has SEO + isVisible fields |
+| `product` | Shop products | Orderable, has SEO fields, paper options for LumaPrints |
+| `printCollection` | Hierarchical print groupings | Orderable, supports nesting via parent ref |
+| `printSet` | Bundled print sets | Orderable |
+| `order` | Purchase records | Auto-created by Stripe webhook (migrating to Convex) |
+| `coupon` | Discount codes | Tracks usage counts |
+| `about` | About page (singleton) | Has SEO fields |
+| `siteSettings` | Global site config (singleton) | Artist name, title, social links, default SEO |
+| `contactPage` | Contact & booking config (singleton) | Conditional booking fields |
+| `inquiry` | Contact form submissions | Read-only, status workflow (new/read/replied) |
+| `post` | Blog posts | 5 template types with conditional fields |
+| `author` | Blog authors | |
+| `category` | Blog categories | |
+| `blockContent` | Portable Text definition | |
+
+---
+
+## Desk Structure
+
+```
+Angel's Rest
+├── Dashboard          — Custom React component with stats + quick actions
+├── ── Content ──
+│   ├── Galleries      — Orderable list
+│   ├── About          — Singleton
+│   └── Contact & Booking — Singleton
+├── ── Shop ──
+│   ├── Products       — By category (All, Prints, Postcards, etc.)
+│   ├── Print Collections — Orderable
+│   ├── Print Sets     — Orderable
+│   └── Coupons
+├── ── Inquiries ──
+│   ├── New            — Filtered: status == "new"
+│   └── All Inquiries
+├── ── Orders ──
+│   ├── All Orders
+│   ├── Today / This Week / This Month / This Year
+├── ── Blog ──
+│   ├── Posts / Authors / Categories
+└── ── Settings ──
+    └── Site Settings  — Singleton
+```
+
+---
+
+## Singletons
+
+`siteSettings`, `about`, and `contactPage` are singletons:
+- Limited actions: publish, discard, restore only (no delete/duplicate)
+- Enforced in `sanity.config.ts` via `document.actions` filter
+
+---
+
+## Presentation Plugin (Live Preview)
+
+The studio has a Presentation tab that opens angelsrest.online in an iframe with visual editing overlay.
+
+- **Draft mode enable:** `/api/draft/enable` on angelsrest frontend
+- **Draft mode disable:** `/api/draft/disable` on angelsrest frontend
+- **Preview token:** `SANITY_PREVIEW_TOKEN` env var on angelsrest (Viewer role)
+- **How it works:** Studio sends a signed URL → frontend validates via `@sanity/preview-url-secret` → sets `__sanity_preview` cookie → enables `@sanity/visual-editing` overlay
 
 ---
 
@@ -34,16 +89,16 @@ Sanity Studio for angelsrest.online. Manages all CMS content: galleries, product
 When modifying schema types, check `angelsrest/src/lib/sanity/` for GROQ queries that may need updating. Field renames or removals are breaking changes.
 
 ### Orderable types need `orderRank`
-`gallery` and `product` use `@sanity/orderable-document-list` — any new orderable type needs the `orderRankField` added to its schema.
+`gallery`, `product`, `printCollection`, and `printSet` use `@sanity/orderable-document-list` — any new orderable type needs the `orderRankField` added to its schema.
+
+### Singleton types need desk structure + action filter
+Add new singletons to both the `SINGLETON_TYPES` set in `sanity.config.ts` AND create a desk structure entry.
 
 ### Deploy studio changes
 After schema or config changes, deploy the studio:
 ```bash
 npx sanity deploy
 ```
-
-### Vision tool = GROQ playground
-Use the Vision tab in Studio to test GROQ queries before putting them in the frontend. Always validate queries there first.
 
 ### Do not touch production data carelessly
 Dataset is `production` — this is live data for a real site. Do not run destructive mutations without explicit instruction.
@@ -54,6 +109,9 @@ Dataset is `production` — this is live data for a real site. Do not run destru
 
 ```bash
 pnpm dev          # Run Studio locally (localhost:3333)
+pnpm build        # Build Studio for deployment
+pnpm lint         # Run Biome check
+pnpm format       # Run Biome format
 npx sanity deploy # Deploy Studio to sanity.io
 npx sanity manage # Open Sanity project dashboard
 ```
@@ -63,12 +121,38 @@ npx sanity manage # Open Sanity project dashboard
 ## Useful GROQ Patterns
 
 ```groq
-# All galleries ordered
-*[_type == "gallery"] | order(orderRank) { title, slug, images }
+# All galleries ordered (visible only)
+*[_type == "gallery" && isVisible == true] | order(orderRank) { title, slug, images }
 
 # All products ordered
 *[_type == "product"] | order(orderRank) { title, slug, price }
 
 # Single document by slug
 *[_type == "post" && slug.current == $slug][0]
+
+# New inquiry count
+count(*[_type == "inquiry" && status == "new"])
+
+# Site settings singleton
+*[_type == "siteSettings"][0]
+
+# Dashboard stats
+{
+  "galleries": count(*[_type == "gallery"]),
+  "totalImages": count(*[_type == "gallery"].images[]),
+  "products": count(*[_type == "product" && inStock == true]),
+  "newInquiries": count(*[_type == "inquiry" && status == "new"])
+}
 ```
+
+---
+
+## Platform Context
+
+This studio is part of the photographer CRM platform:
+- **angelsrest** = your personal site + platform hub
+- **angelsrest-studio** = your Sanity CMS (content only)
+- **Convex** = operational backend (orders, CRM, messages, tiers) — coming soon
+- **admin-dashboard** = shared admin package for all client sites — coming soon
+
+See full spec: `~/Documents/quilt/02_reference/projects/photographer_crm/implementation-spec.md`

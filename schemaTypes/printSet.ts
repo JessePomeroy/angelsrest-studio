@@ -11,82 +11,82 @@
  * Used on: /shop (top-level sets), /shop/sets/[slug] (detail page)
  */
 
-import {defineField, defineType} from 'sanity'
-import {orderRankField} from '@sanity/orderable-document-list'
-import {paperOptions} from './constants/paperOptions'
+import { orderRankField } from "@sanity/orderable-document-list";
+import { defineField, defineType } from "sanity";
+import { paperOptions } from "./constants/paperOptions";
 
 export const printSet = defineType({
-  name: 'printSet',
-  title: 'Print Set',
-  type: 'document',
+  name: "printSet",
+  title: "Print Set",
+  type: "document",
 
   fields: [
-    orderRankField({type: 'printSet'}),
+    orderRankField({ type: "printSet" }),
 
     defineField({
-      name: 'title',
-      title: 'Title',
-      type: 'string',
+      name: "title",
+      title: "Title",
+      type: "string",
       validation: (rule) => rule.required(),
     }),
 
     defineField({
-      name: 'slug',
-      title: 'Slug',
-      type: 'slug',
+      name: "slug",
+      title: "Slug",
+      type: "slug",
       options: {
-        source: 'title',
+        source: "title",
         maxLength: 96,
       },
       validation: (rule) => rule.required(),
     }),
 
     defineField({
-      name: 'parent',
-      title: 'Parent Collection',
-      type: 'reference',
-      to: [{type: 'printCollection'}],
-      description: 'Optional: link this set to a print collection',
+      name: "parent",
+      title: "Parent Collection",
+      type: "reference",
+      to: [{ type: "printCollection" }],
+      description: "Optional: link this set to a print collection",
     }),
 
     defineField({
-      name: 'previewImage',
-      title: 'Preview Image',
-      type: 'image',
+      name: "previewImage",
+      title: "Preview Image",
+      type: "image",
       options: {
         hotspot: true,
       },
       fields: [
         {
-          name: 'alt',
-          type: 'string',
-          title: 'Alternative text',
+          name: "alt",
+          type: "string",
+          title: "Alternative text",
         },
       ],
     }),
 
     defineField({
-      name: 'description',
-      title: 'Description',
-      type: 'text',
+      name: "description",
+      title: "Description",
+      type: "text",
       rows: 3,
     }),
 
     defineField({
-      name: 'images',
-      title: 'Set Images',
-      type: 'array',
+      name: "images",
+      title: "Set Images",
+      type: "array",
       of: [
         {
-          type: 'image',
+          type: "image",
           options: {
             hotspot: true,
           },
           fields: [
             {
-              name: 'alt',
-              type: 'string',
-              title: 'Alternative text',
+              name: "alt",
+              type: "string",
+              title: "Alternative text",
             },
           ],
         },
@@ -95,65 +95,65 @@ export const printSet = defineType({
     }),
 
     defineField({
-      name: 'price',
-      title: 'Price',
-      type: 'number',
+      name: "price",
+      title: "Price",
+      type: "number",
       validation: (rule) => rule.required().positive(),
-      description: 'Price for the entire set in USD',
+      description: "Price for the entire set in USD",
     }),
 
     defineField({
-      name: 'category',
-      title: 'Category',
-      type: 'string',
+      name: "category",
+      title: "Category",
+      type: "string",
       options: {
         list: [
-          {title: 'Prints', value: 'prints'},
-          {title: 'Postcards', value: 'postcards'},
-          {title: 'Tapestries', value: 'tapestries'},
-          {title: 'Digital', value: 'digital'},
-          {title: 'Merchandise', value: 'merchandise'},
+          { title: "Prints", value: "prints" },
+          { title: "Postcards", value: "postcards" },
+          { title: "Tapestries", value: "tapestries" },
+          { title: "Digital", value: "digital" },
+          { title: "Merchandise", value: "merchandise" },
         ],
       },
     }),
 
     // Paper options specific to this set
     defineField({
-      name: 'availablePapers',
-      title: 'Paper Options',
-      description: 'Paper types and sizes available for this set',
-      type: 'array',
+      name: "availablePapers",
+      title: "Paper Options",
+      description: "Paper types and sizes available for this set",
+      type: "array",
       of: [
         {
-          type: 'object',
+          type: "object",
           fields: [
             {
-              name: 'name',
-              title: 'Paper Name',
-              type: 'string',
+              name: "name",
+              title: "Paper Name",
+              type: "string",
               options: {
                 list: paperOptions,
               },
             },
             {
-              name: 'price',
-              title: 'Price',
-              type: 'number',
-              description: 'Override the base price for this paper option',
+              name: "price",
+              title: "Price",
+              type: "number",
+              description: "Override the base price for this paper option",
             },
           ],
           preview: {
             select: {
-              name: 'name',
-              price: 'price',
+              name: "name",
+              price: "price",
             },
             prepare(value: any) {
-              const name = value?.name?.split('|')[0] || 'Paper option'
-              const price = value?.price
+              const name = value?.name?.split("|")[0] || "Paper option";
+              const price = value?.price;
               return {
                 title: name,
-                subtitle: price ? `$${price}` : 'Uses base price',
-              }
+                subtitle: price ? `$${price}` : "Uses base price",
+              };
             },
           },
         },
@@ -161,32 +161,32 @@ export const printSet = defineType({
     }),
 
     defineField({
-      name: 'inStock',
-      title: 'In Stock',
-      type: 'boolean',
+      name: "inStock",
+      title: "In Stock",
+      type: "boolean",
       initialValue: true,
     }),
 
     defineField({
-      name: 'featured',
-      title: 'Featured',
-      type: 'boolean',
+      name: "featured",
+      title: "Featured",
+      type: "boolean",
       initialValue: false,
     }),
   ],
 
   preview: {
     select: {
-      title: 'title',
-      media: 'previewImage',
-      subtitle: 'price',
+      title: "title",
+      media: "previewImage",
+      subtitle: "price",
     },
-    prepare({title, media, subtitle}: any) {
+    prepare({ title, media, subtitle }: any) {
       return {
         title,
-        subtitle: subtitle ? `$${subtitle}` : 'No price',
+        subtitle: subtitle ? `$${subtitle}` : "No price",
         media,
-      }
+      };
     },
   },
-})
+});

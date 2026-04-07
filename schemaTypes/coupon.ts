@@ -15,109 +15,109 @@
  * - Usage limits with automatic tracking
  */
 
-import {defineField, defineType} from 'sanity'
+import { defineField, defineType } from "sanity";
 
 export const coupon = defineType({
-  name: 'coupon',
-  title: 'Coupon',
-  type: 'document',
+  name: "coupon",
+  title: "Coupon",
+  type: "document",
 
   fields: [
     defineField({
-      name: 'code',
-      title: 'Coupon Code',
-      type: 'string',
+      name: "code",
+      title: "Coupon Code",
+      type: "string",
       validation: (rule) => rule.required().uppercase(),
-      description: 'The code customers enter at checkout (will be converted to uppercase)',
+      description: "The code customers enter at checkout (will be converted to uppercase)",
     }),
 
     defineField({
-      name: 'description',
-      title: 'Description',
-      type: 'string',
+      name: "description",
+      title: "Description",
+      type: "string",
       description: 'Internal description (e.g., "20% off tapestries")',
     }),
 
     defineField({
-      name: 'discountType',
-      title: 'Discount Type',
-      type: 'string',
+      name: "discountType",
+      title: "Discount Type",
+      type: "string",
       options: {
         list: [
-          {title: 'Percentage', value: 'percent'},
-          {title: 'Fixed Amount', value: 'fixed'},
+          { title: "Percentage", value: "percent" },
+          { title: "Fixed Amount", value: "fixed" },
         ],
       },
-      initialValue: 'percent',
+      initialValue: "percent",
     }),
 
     defineField({
-      name: 'discountValue',
-      title: 'Discount Value',
-      type: 'number',
+      name: "discountValue",
+      title: "Discount Value",
+      type: "number",
       validation: (rule) => rule.required().positive(),
-      description: 'Percentage (e.g., 20) or fixed amount in dollars (e.g., 10)',
+      description: "Percentage (e.g., 20) or fixed amount in dollars (e.g., 10)",
     }),
 
     defineField({
-      name: 'allowedCategories',
-      title: 'Allowed Categories',
-      type: 'array',
-      of: [{type: 'string'}],
+      name: "allowedCategories",
+      title: "Allowed Categories",
+      type: "array",
+      of: [{ type: "string" }],
       options: {
         list: [
-          {title: 'Prints', value: 'prints'},
-          {title: 'Postcards', value: 'postcards'},
-          {title: 'Tapestries', value: 'tapestries'},
-          {title: 'Digital', value: 'digital'},
-          {title: 'Merchandise', value: 'merchandise'},
+          { title: "Prints", value: "prints" },
+          { title: "Postcards", value: "postcards" },
+          { title: "Tapestries", value: "tapestries" },
+          { title: "Digital", value: "digital" },
+          { title: "Merchandise", value: "merchandise" },
         ],
       },
-      description: 'Leave empty to allow all categories, or select specific categories',
+      description: "Leave empty to allow all categories, or select specific categories",
     }),
 
     defineField({
-      name: 'allowedProducts',
-      title: 'Allowed Products',
-      type: 'array',
+      name: "allowedProducts",
+      title: "Allowed Products",
+      type: "array",
       of: [
         {
-          type: 'reference',
-          to: [{type: 'product'}],
+          type: "reference",
+          to: [{ type: "product" }],
         },
       ],
-      description: 'Optional: restrict to specific products. Overrides allowedCategories if set.',
+      description: "Optional: restrict to specific products. Overrides allowedCategories if set.",
     }),
 
     defineField({
-      name: 'maxUses',
-      title: 'Max Uses',
-      type: 'number',
-      description: 'Maximum number of times this coupon can be used. Leave empty for unlimited.',
+      name: "maxUses",
+      title: "Max Uses",
+      type: "number",
+      description: "Maximum number of times this coupon can be used. Leave empty for unlimited.",
     }),
 
     defineField({
-      name: 'currentUses',
-      title: 'Current Uses',
-      type: 'number',
+      name: "currentUses",
+      title: "Current Uses",
+      type: "number",
       initialValue: 0,
       readOnly: true,
-      description: 'Track usage (updated automatically on checkout)',
+      description: "Track usage (updated automatically on checkout)",
     }),
 
     defineField({
-      name: 'active',
-      title: 'Active',
-      type: 'boolean',
+      name: "active",
+      title: "Active",
+      type: "boolean",
       initialValue: true,
-      description: 'Disable to prevent the coupon from being used',
+      description: "Disable to prevent the coupon from being used",
     }),
   ],
 
   preview: {
     select: {
-      title: 'code',
-      subtitle: 'description',
+      title: "code",
+      subtitle: "description",
     },
   },
-})
+});

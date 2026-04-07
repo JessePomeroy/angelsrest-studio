@@ -1,238 +1,284 @@
 /**
  * Sanity Studio Configuration
- * 
+ *
  * This file configures the Sanity Studio:
  * - Project connection (projectId, dataset)
  * - Plugins (structure tool, vision tool)
  * - Custom desk structure (sidebar organization)
  * - Schema types
- * 
+ *
  * Deploy changes with: npx sanity deploy
  */
 
-import {defineConfig} from 'sanity'
-import {structureTool} from 'sanity/structure'
-import {visionTool} from '@sanity/vision'
-import {orderableDocumentListDeskItem} from '@sanity/orderable-document-list'
-import {schemaTypes} from './schemaTypes'
+import { orderableDocumentListDeskItem } from "@sanity/orderable-document-list";
+import { visionTool } from "@sanity/vision";
+import { defineConfig } from "sanity";
+import { presentationTool } from "sanity/presentation";
+import { structureTool } from "sanity/structure";
+import { schemaTypes } from "./schemaTypes";
+import { DashboardHome } from "./src/components/DashboardHome";
+
+// Singleton document IDs — ensures only one of each exists
+const SINGLETON_TYPES = new Set(["siteSettings", "about", "contactPage"]);
+const SINGLETON_ACTIONS = new Set(["publish", "discardChanges", "restore"]);
 
 export default defineConfig({
-  // Internal name for this config
-  name: 'default',
-  
-  // Title shown in the Studio header
-  title: 'angelsrest',
-
-  // Your Sanity project ID (from sanity.io/manage)
-  projectId: 'n7rvza4g',
-  
-  // Dataset to use — 'production' is the default
-  // You can create other datasets (e.g., 'staging') for testing
-  dataset: 'production',
+  name: "default",
+  title: "Angel's Rest Studio",
+  projectId: "n7rvza4g",
+  dataset: "production",
 
   plugins: [
-    /**
-     * Structure Tool
-     * 
-     * Customizes the sidebar/desk structure in the Studio.
-     * Without this, all document types appear as a flat list.
-     * With this, we can:
-     * - Group related items
-     * - Add dividers
-     * - Enable drag-and-drop ordering for specific types
-     */
     structureTool({
       structure: (S, context) =>
         S.list()
-          .title('Content')
+          .title("Angel's Rest")
           .items([
-            /**
-             * Galleries with drag-and-drop ordering
-             * Uses the @sanity/orderable-document-list plugin
-             * Requires orderRankField in the schema
-             */
+            // ═══════════════════════════════════════
+            // Dashboard
+            // ═══════════════════════════════════════
+            S.listItem().title("Dashboard").child(S.component(DashboardHome).title("Dashboard")),
+
+            S.divider(),
+
+            // ═══════════════════════════════════════
+            // Content
+            // ═══════════════════════════════════════
             orderableDocumentListDeskItem({
-              type: 'gallery',
-              title: 'Galleries',
+              type: "gallery",
+              title: "Galleries",
               S,
               context,
             }),
-            
-            S.divider(),
-            
-            /**
-             * Products with drag-and-drop ordering
-             * Uses the @sanity/orderable-document-list plugin
-             * Requires orderRank field in the product schema
-             */
+
+            // About — singleton (opens directly to the document)
             S.listItem()
-              .title('Products')
-              .schemaType('product')
+              .title("About")
+              .schemaType("about")
+              .child(
+                S.documentTypeList("about")
+                  .title("About")
+                  .defaultOrdering([{ field: "_createdAt", direction: "desc" }]),
+              ),
+
+            // Contact & Booking — singleton
+            S.listItem()
+              .title("Contact & Booking")
+              .schemaType("contactPage")
+              .child(
+                S.documentTypeList("contactPage")
+                  .title("Contact & Booking")
+                  .defaultOrdering([{ field: "_createdAt", direction: "desc" }]),
+              ),
+
+            S.divider(),
+
+            // ═══════════════════════════════════════
+            // Shop
+            // ═══════════════════════════════════════
+            S.listItem()
+              .title("Products")
+              .schemaType("product")
               .child(
                 S.list()
-                  .title('Products')
+                  .title("Products")
                   .items([
                     S.listItem()
-                      .title('All Products')
+                      .title("All Products")
                       .child(
-                        S.documentTypeList('product')
-                          .title('All Products')
-                          .defaultOrdering([{field: 'orderRank', direction: 'asc'}])
+                        S.documentTypeList("product")
+                          .title("All Products")
+                          .defaultOrdering([{ field: "orderRank", direction: "asc" }]),
                       ),
                     S.divider(),
-                    ...['prints', 'postcards', 'tapestries', 'digital', 'merchandise'].map((cat) =>
+                    ...["prints", "postcards", "tapestries", "digital", "merchandise"].map((cat) =>
                       S.listItem()
                         .title(cat.charAt(0).toUpperCase() + cat.slice(1))
                         .child(
                           S.documentList()
                             .title(cat.charAt(0).toUpperCase() + cat.slice(1))
-                            .schemaType('product')
+                            .schemaType("product")
                             .filter('_type == "product" && category == $category')
-                            .params({category: cat})
-                            .defaultOrdering([{field: 'orderRank', direction: 'asc'}])
-                        )
+                            .params({ category: cat })
+                            .defaultOrdering([{ field: "orderRank", direction: "asc" }]),
+                        ),
                     ),
-                  ])
+                  ]),
               ),
 
-            /**
-             * Print Collections for the shop
-             * Organize prints into sets/collections
-             */
             orderableDocumentListDeskItem({
-              type: 'printCollection',
-              title: 'Print Collections',
+              type: "printCollection",
+              title: "Print Collections",
               S,
               context,
             }),
 
-            /**
-             * Print Sets - bundles of multiple prints sold together
-             */
             orderableDocumentListDeskItem({
-              type: 'printSet',
-              title: 'Print Sets',
+              type: "printSet",
+              title: "Print Sets",
               S,
               context,
             }),
 
-            // About — typically just one document
             S.listItem()
-              .title('About')
-              .schemaType('about')
-              .child(S.documentTypeList('about')),
-            
+              .title("Coupons")
+              .schemaType("coupon")
+              .child(S.documentTypeList("coupon").title("Coupons")),
+
             S.divider(),
-            
-            /**
-             * Orders from online purchases
-             * Created automatically via Stripe webhook
-             * Organized by time period for easy browsing
-             */
+
+            // ═══════════════════════════════════════
+            // Inquiries
+            // ═══════════════════════════════════════
             S.listItem()
-              .title('Orders')
-              .schemaType('order')
+              .title("Inquiries")
+              .schemaType("inquiry")
               .child(
                 S.list()
-                  .title('Orders')
+                  .title("Inquiries")
                   .items([
                     S.listItem()
-                      .title('All Orders')
+                      .title("New")
                       .child(
-                        S.documentTypeList('order')
-                          .title('All Orders')
-                          .defaultOrdering([{field: 'createdAt', direction: 'desc'}])
+                        S.documentList()
+                          .title("New Inquiries")
+                          .schemaType("inquiry")
+                          .filter('_type == "inquiry" && status == "new"')
+                          .defaultOrdering([{ field: "submittedAt", direction: "desc" }]),
+                      ),
+                    S.listItem()
+                      .title("All Inquiries")
+                      .child(
+                        S.documentTypeList("inquiry")
+                          .title("All Inquiries")
+                          .defaultOrdering([{ field: "submittedAt", direction: "desc" }]),
+                      ),
+                  ]),
+              ),
+
+            S.divider(),
+
+            // ═══════════════════════════════════════
+            // Orders
+            // ═══════════════════════════════════════
+            S.listItem()
+              .title("Orders")
+              .schemaType("order")
+              .child(
+                S.list()
+                  .title("Orders")
+                  .items([
+                    S.listItem()
+                      .title("All Orders")
+                      .child(
+                        S.documentTypeList("order")
+                          .title("All Orders")
+                          .defaultOrdering([{ field: "createdAt", direction: "desc" }]),
                       ),
                     S.divider(),
                     S.listItem()
-                      .title('Today')
+                      .title("Today")
                       .child(
                         S.documentList()
-                          .title('Today')
-                          .schemaType('order')
+                          .title("Today")
+                          .schemaType("order")
                           .filter('_type == "order" && createdAt >= $start')
-                          .params({start: new Date(new Date().setHours(0,0,0,0)).toISOString()})
-                          .defaultOrdering([{field: 'createdAt', direction: 'desc'}])
+                          .params({
+                            start: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(),
+                          })
+                          .defaultOrdering([{ field: "createdAt", direction: "desc" }]),
                       ),
                     S.listItem()
-                      .title('This Week')
+                      .title("This Week")
                       .child(
                         S.documentList()
-                          .title('This Week')
-                          .schemaType('order')
+                          .title("This Week")
+                          .schemaType("order")
                           .filter('_type == "order" && createdAt >= $start')
-                          .params({start: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()})
-                          .defaultOrdering([{field: 'createdAt', direction: 'desc'}])
+                          .params({
+                            start: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+                          })
+                          .defaultOrdering([{ field: "createdAt", direction: "desc" }]),
                       ),
                     S.listItem()
-                      .title('This Month')
+                      .title("This Month")
                       .child(
                         S.documentList()
-                          .title('This Month')
-                          .schemaType('order')
+                          .title("This Month")
+                          .schemaType("order")
                           .filter('_type == "order" && createdAt >= $start')
-                          .params({start: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()})
-                          .defaultOrdering([{field: 'createdAt', direction: 'desc'}])
+                          .params({
+                            start: new Date(
+                              new Date().getFullYear(),
+                              new Date().getMonth(),
+                              1,
+                            ).toISOString(),
+                          })
+                          .defaultOrdering([{ field: "createdAt", direction: "desc" }]),
                       ),
                     S.listItem()
-                      .title('This Year')
+                      .title("This Year")
                       .child(
                         S.documentList()
-                          .title('This Year')
-                          .schemaType('order')
+                          .title("This Year")
+                          .schemaType("order")
                           .filter('_type == "order" && createdAt >= $start')
-                          .params({start: new Date(new Date().getFullYear(), 0, 1).toISOString()})
-                          .defaultOrdering([{field: 'createdAt', direction: 'desc'}])
+                          .params({
+                            start: new Date(new Date().getFullYear(), 0, 1).toISOString(),
+                          })
+                          .defaultOrdering([{ field: "createdAt", direction: "desc" }]),
                       ),
-                  ])
+                  ]),
               ),
-            
+
             S.divider(),
-            
-            /**
-             * Coupons / Discount codes
-             */
+
+            // ═══════════════════════════════════════
+            // Blog
+            // ═══════════════════════════════════════
+            S.listItem().title("Posts").schemaType("post").child(S.documentTypeList("post")),
+            S.listItem().title("Authors").schemaType("author").child(S.documentTypeList("author")),
             S.listItem()
-              .title('Coupons')
-              .schemaType('coupon')
-              .child(S.documentTypeList('coupon').title('Coupons')),
-            
+              .title("Categories")
+              .schemaType("category")
+              .child(S.documentTypeList("category")),
+
             S.divider(),
-            
-            /**
-             * Blog schemas (for future use)
-             * These came with the template and are ready
-             * for when you want to add a blog section
-             */
+
+            // ═══════════════════════════════════════
+            // Settings
+            // ═══════════════════════════════════════
             S.listItem()
-              .title('Posts')
-              .schemaType('post')
-              .child(S.documentTypeList('post')),
-            S.listItem()
-              .title('Authors')
-              .schemaType('author')
-              .child(S.documentTypeList('author')),
-            S.listItem()
-              .title('Categories')
-              .schemaType('category')
-              .child(S.documentTypeList('category')),
+              .title("Site Settings")
+              .schemaType("siteSettings")
+              .child(
+                S.documentTypeList("siteSettings")
+                  .title("Site Settings")
+                  .defaultOrdering([{ field: "_createdAt", direction: "desc" }]),
+              ),
           ]),
     }),
 
-    /**
-     * Vision Tool
-     * 
-     * GROQ query playground — accessible via "Vision" tab in Studio.
-     * Use it to test queries before adding them to your frontend.
-     * 
-     * Example query:
-     * *[_type == "gallery"] | order(orderRank) { title, slug }
-     */
+    presentationTool({
+      previewUrl: {
+        draftMode: {
+          enable: "/api/draft/enable",
+        },
+      },
+    }),
+
     visionTool(),
   ],
 
-  // Register all schema types
   schema: {
     types: schemaTypes,
   },
-})
+
+  document: {
+    // For singletons, limit the actions to publish/discard/restore
+    actions: (input, context) =>
+      SINGLETON_TYPES.has(context.schemaType)
+        ? input.filter((action) => SINGLETON_ACTIONS.has(action.action ?? ""))
+        : input,
+  },
+});
