@@ -171,9 +171,9 @@ export default defineType({
       author: "author.name",
       media: "mainImage",
       postType: "postType",
+      publishedAt: "publishedAt",
     },
-    prepare(selection) {
-      const { author, postType } = selection;
+    prepare({ title, author, media, postType, publishedAt }) {
       const typeLabel =
         postType === "caseStudy"
           ? "Case Study"
@@ -184,10 +184,17 @@ export default defineType({
               : postType === "clientStory"
                 ? "Client Story"
                 : null;
-      return {
-        ...selection,
-        subtitle: author && `by ${author}${typeLabel ? ` • ${typeLabel}` : ""}`,
-      };
+      const dateStr = publishedAt
+        ? new Date(publishedAt).toLocaleDateString(undefined, {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })
+        : "Draft";
+      const parts = [dateStr];
+      if (author) parts.push(`by ${author}`);
+      if (typeLabel) parts.push(typeLabel);
+      return { title, media, subtitle: parts.join(" · ") };
     },
   },
 });

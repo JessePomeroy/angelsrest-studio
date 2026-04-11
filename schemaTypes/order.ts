@@ -1,4 +1,6 @@
+import { createElement } from "react";
 import { defineType } from "sanity";
+import { StatusEmoji } from "./components/StatusEmoji";
 
 export const order = defineType({
   name: "order",
@@ -190,17 +192,22 @@ export const order = defineType({
   ],
   preview: {
     select: {
-      title: "orderNumber",
-      subtitle: "customerEmail",
+      orderNumber: "orderNumber",
+      customerEmail: "customerEmail",
+      customerName: "customerName",
       status: "status",
       total: "total",
-      media: "items.0.image",
     },
-    prepare({ title, subtitle, status, total }) {
-      const formattedTotal = total ? `$${(total / 100).toFixed(2)}` : "";
+    prepare({ orderNumber, customerEmail, customerName, status, total }) {
+      const formattedTotal = typeof total === "number" ? `$${(total / 100).toFixed(2)}` : "";
+      const customer = customerName || customerEmail || "Unknown customer";
+      const parts = [status || "new"];
+      if (formattedTotal) parts.push(formattedTotal);
+      parts.push(customer);
       return {
-        title: `${title || "No order number"}`,
-        subtitle: `${status || "new"} · ${formattedTotal} · ${subtitle || ""}`,
+        title: orderNumber || "No order number",
+        subtitle: parts.join(" · "),
+        media: createElement(StatusEmoji, { status }),
       };
     },
   },

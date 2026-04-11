@@ -154,7 +154,15 @@ export const gallery = defineType({
   preview: {
     select: {
       title: "title",
-      media: "images.0", // Use first image as thumbnail
+      media: "images.0",
+      images: "images",
+      category: "category",
+    },
+    prepare({ title, media, images, category }) {
+      const count = Array.isArray(images) ? images.length : 0;
+      const countText = count === 0 ? "No images yet" : `${count} image${count === 1 ? "" : "s"}`;
+      const subtitle = category ? `${countText} · ${category}` : countText;
+      return { title, media, subtitle };
     },
   },
 });

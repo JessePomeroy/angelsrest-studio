@@ -8,7 +8,9 @@
  */
 
 import { InboxIcon } from "@sanity/icons";
+import { createElement } from "react";
 import { defineField, defineType } from "sanity";
+import { StatusEmoji } from "./components/StatusEmoji";
 
 export const inquiry = defineType({
   name: "inquiry",
@@ -108,11 +110,15 @@ export const inquiry = defineType({
       date: "submittedAt",
     },
     prepare({ name, subject, status, date }) {
-      const statusLabel = status === "new" ? "🔴 New" : status === "read" ? "👁 Read" : "✅ Replied";
-      const dateStr = date ? new Date(date).toLocaleDateString() : "";
+      const dateStr = date
+        ? new Date(date).toLocaleDateString(undefined, { month: "short", day: "numeric" })
+        : "";
+      const parts = [subject ?? "No subject"];
+      if (dateStr) parts.push(dateStr);
       return {
         title: name ?? "Unknown",
-        subtitle: `${statusLabel} · ${subject ?? "No subject"} · ${dateStr}`,
+        subtitle: parts.join(" · "),
+        media: createElement(StatusEmoji, { status }),
       };
     },
   },

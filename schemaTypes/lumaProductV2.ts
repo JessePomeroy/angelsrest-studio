@@ -150,9 +150,22 @@ export const lumaProductV2 = defineType({
     select: {
       title: "title",
       media: "image",
+      variants: "variants",
+      inStock: "inStock",
     },
-    prepare({ title, media }) {
-      return { title, media, subtitle: "Print Product (V2)" };
+    prepare({ title, media, variants, inStock }) {
+      const list = Array.isArray(variants) ? variants : [];
+      const total = list.length;
+      const enabled = list.filter((v: any) => v?.enabled !== false).length;
+      const variantText =
+        total === 0
+          ? "No variants"
+          : enabled === total
+            ? `${total} variant${total === 1 ? "" : "s"}`
+            : `${enabled}/${total} variants enabled`;
+      const parts = [variantText];
+      if (inStock === false) parts.push("sold out");
+      return { title, media, subtitle: parts.join(" · ") };
     },
   },
 });

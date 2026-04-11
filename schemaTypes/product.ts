@@ -235,19 +235,21 @@ export const product = defineType({
     }),
   ],
 
-  // Preview in document lists shows title, thumbnail, and price
+  // Preview in document lists shows title, thumbnail, price, and category.
   preview: {
     select: {
       title: "title",
       media: "images.0",
       price: "price",
+      category: "category",
+      inStock: "inStock",
     },
-    prepare({ title, media, price }) {
-      return {
-        title,
-        media,
-        subtitle: price ? `$${price}` : "No price set",
-      };
+    prepare({ title, media, price, category, inStock }) {
+      const priceText = typeof price === "number" ? `$${price}` : "No price set";
+      const parts = [priceText];
+      if (category) parts.push(category);
+      if (inStock === false) parts.push("sold out");
+      return { title, media, subtitle: parts.join(" · ") };
     },
   },
 });
