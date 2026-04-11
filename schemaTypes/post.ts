@@ -106,7 +106,8 @@ export default defineType({
       type: "text",
       rows: 3,
       description: "What the client needed or what you wanted to explore",
-      hidden: ({ document }) => !["caseStudy", "clientStory"].includes(document?.postType),
+      hidden: ({ document }) =>
+        !["caseStudy", "clientStory"].includes(document?.postType as string),
     }),
     defineField({
       name: "approach",
@@ -114,7 +115,8 @@ export default defineType({
       type: "text",
       rows: 4,
       description: "Your creative direction, gear choices, film stocks used",
-      hidden: ({ document }) => !["caseStudy", "clientStory"].includes(document?.postType),
+      hidden: ({ document }) =>
+        !["caseStudy", "clientStory"].includes(document?.postType as string),
     }),
     defineField({
       name: "result",
@@ -122,7 +124,8 @@ export default defineType({
       type: "text",
       rows: 3,
       description: "Final delivery or personal reflection",
-      hidden: ({ document }) => !["caseStudy", "clientStory"].includes(document?.postType),
+      hidden: ({ document }) =>
+        !["caseStudy", "clientStory"].includes(document?.postType as string),
     }),
 
     // Technical Write-up fields
