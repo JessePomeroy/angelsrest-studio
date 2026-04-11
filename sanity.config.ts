@@ -39,6 +39,85 @@ export default defineConfig({
             // ═══════════════════════════════════════
             S.listItem().title("Dashboard").child(S.component(DashboardHome).title("Dashboard")),
 
+            // ═══════════════════════════════════════
+            // Needs Attention — control tower view
+            // (thresholds: 7d for stale drafts, 2d for unanswered inquiries)
+            // ═══════════════════════════════════════
+            S.listItem()
+              .title("⚠️ Needs Attention")
+              .child(
+                S.list()
+                  .title("Needs Attention")
+                  .items([
+                    S.listItem()
+                      .title("Drafts older than 7 days")
+                      .child(
+                        S.documentList()
+                          .title("Stale drafts")
+                          .filter('_id in path("drafts.**") && _updatedAt < $weekAgo')
+                          .params({
+                            weekAgo: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+                          })
+                          .defaultOrdering([{ field: "_updatedAt", direction: "asc" }]),
+                      ),
+                    S.listItem()
+                      .title("Unanswered inquiries (>2 days)")
+                      .child(
+                        S.documentList()
+                          .title("Unanswered inquiries")
+                          .schemaType("inquiry")
+                          .filter(
+                            '_type == "inquiry" && status in ["new", "read"] && submittedAt < $twoDaysAgo',
+                          )
+                          .params({
+                            twoDaysAgo: new Date(
+                              Date.now() - 2 * 24 * 60 * 60 * 1000,
+                            ).toISOString(),
+                          })
+                          .defaultOrdering([{ field: "submittedAt", direction: "asc" }]),
+                      ),
+                    S.listItem()
+                      .title("Orders awaiting fulfillment")
+                      .child(
+                        S.documentList()
+                          .title("Awaiting fulfillment")
+                          .schemaType("order")
+                          .filter('_type == "order" && status in ["new", "printing", "ready"]')
+                          .defaultOrdering([{ field: "createdAt", direction: "asc" }]),
+                      ),
+                    S.divider(),
+                    S.listItem()
+                      .title("Products without prices")
+                      .child(
+                        S.documentList()
+                          .title("Missing prices")
+                          .schemaType("product")
+                          .filter('_type == "product" && !defined(price)')
+                          .defaultOrdering([{ field: "_updatedAt", direction: "desc" }]),
+                      ),
+                    S.listItem()
+                      .title("Galleries without images")
+                      .child(
+                        S.documentList()
+                          .title("Empty galleries")
+                          .schemaType("gallery")
+                          .filter('_type == "gallery" && (!defined(images) || count(images) == 0)')
+                          .defaultOrdering([{ field: "_updatedAt", direction: "desc" }]),
+                      ),
+                    S.listItem()
+                      .title("Print products without variants")
+                      .child(
+                        S.documentList()
+                          .title("Missing variants")
+                          .schemaType("lumaProductV2")
+                          .filter(
+                            '_type == "lumaProductV2" && (!defined(variants) || count(variants) == 0)',
+                          )
+                          .defaultOrdering([{ field: "_updatedAt", direction: "desc" }]),
+                      ),
+                  ]),
+              ),
+
             S.divider(),
 
             // ═══════════════════════════════════════
