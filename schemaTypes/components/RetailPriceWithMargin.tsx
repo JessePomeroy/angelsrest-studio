@@ -1,15 +1,26 @@
 /**
  * Custom field component for `retailPrice` on a Shop V2 product variant.
  *
- * Renders the standard Sanity number input and adds a line below showing the
- * wholesale cost (looked up from `constants/lumaprintsCatalog.ts` based on
- * the variant's selected paper + size) and the computed margin percentage.
- * The margin updates live as the photographer types a retail price.
+ * Renders the standard Sanity number input and adds a line below showing
+ * the photographer's actual take-home per unit, factoring in:
+ *   - LumaPrints wholesale cost (looked up from `constants/lumaprintsCatalog.ts`)
+ *   - Stripe processing fees (default 2.9% + $0.30)
+ *   - Platform fee (default 0% in angelsrest-studio, 5% in client studios
+ *     when the Stripe Connect platform fee ships per priority roadmap #6)
  *
- * Reads sibling `paper` and `size` fields via `useFormValue` on the parent
- * variant path. If either is unset, prompts the user to pick them. If both
- * are set but the combination isn't in the wholesale cost table, says so
- * explicitly so the photographer knows the margin can't be computed.
+ * Refreshed 2026-04-11 (margin calculator drive-by, refactor audit). The
+ * previous version showed gross margin (retail - wholesale) and ignored
+ * Stripe fees entirely, which meant a photographer setting $200 retail
+ * on a $40 wholesale print saw "Margin: 80% ($160 profit)" but actually
+ * pocketed $153.90 after Stripe took its cut. Now the display reflects
+ * real take-home so the dashboard number matches the actual Stripe payout.
+ *
+ * Per-studio configuration via env vars (Sanity studio reads them via
+ * import.meta.env at build time):
+ *   - SANITY_STUDIO_PLATFORM_FEE_PCT — defaults to 0 in angelsrest-studio.
+ *     Client studio repos override this to 0.05 once Stripe Connect ships.
+ *   - SANITY_STUDIO_STRIPE_FEE_PCT — defaults to 0.029 (US Stripe rate).
+ *   - SANITY_STUDIO_STRIPE_FEE_FIXED_CENTS — defaults to 30 ($0.30 US).
  *
  * Wired up via `components: { field: RetailPriceWithMargin }` in the
  * `lumaProductV2` schema.
@@ -23,6 +34,34 @@ import { getWholesaleCost } from "../constants/lumaprintsCatalog";
 interface VariantContext {
   paper?: string;
   size?: string;
+}
+
+// Per-studio fee configuration. Read once at module load via import.meta.env
+// — Sanity studio inlines these at build time, so changing them requires
+// a studio rebuild + redeploy. That's the right cadence for a fee config:
+// stable across the day-to-day editing experience.
+const PLATFORM_FEE_PCT = parseFloat(import.meta.env.SANITY_STUDIO_PLATFORM_FEE_PCT ?? "0");
+const STRIPE_FEE_PCT = parseFloat(import.meta.env.SANITY_STUDIO_STRIPE_FEE_PCT ?? "0.029");
+const STRIPE_FEE_FIXED_CENTS = parseInt(
+  import.meta.env.SANITY_STUDIO_STRIPE_FEE_FIXED_CENTS ?? "30",
+  10,
+);
+
+interface FeeBreakdown {
+  stripeFee: number;
+  platformFee: number;
+  takeHome: number;
+}
+
+/**
+ * Pure calculation helper. Exported for unit testing in the future
+ * (no tests yet — Sanity studios don't have a vitest setup).
+ */
+export function computeFeeBreakdown(retail: number, wholesale: number): FeeBreakdown {
+  const stripeFee = retail * STRIPE_FEE_PCT + STRIPE_FEE_FIXED_CENTS / 100;
+  const platformFee = retail * PLATFORM_FEE_PCT;
+  const takeHome = retail - wholesale - stripeFee - platformFee;
+  return { stripeFee, platformFee, takeHome };
 }
 
 export function RetailPriceWithMargin(props: FieldProps) {
@@ -43,14 +82,20 @@ export function RetailPriceWithMargin(props: FieldProps) {
   } else if (cost === null) {
     summary = "Wholesale cost not yet in catalog for this paper × size.";
   } else if (retail <= 0) {
-    summary = `Wholesale: $${cost.toFixed(2)} · set a retail price to see margin.`;
+    summary = `Wholesale: $${cost.toFixed(2)} · set a retail price to see take-home.`;
   } else if (retail < cost) {
     const loss = cost - retail;
     summary = `Wholesale: $${cost.toFixed(2)} · LOSS: $${loss.toFixed(2)} per unit.`;
   } else {
-    const profit = retail - cost;
-    const marginPct = (profit / retail) * 100;
-    summary = `Wholesale: $${cost.toFixed(2)} · Margin: ${marginPct.toFixed(1)}% ($${profit.toFixed(2)} profit)`;
+    const { stripeFee, platformFee, takeHome } = computeFeeBreakdown(retail, cost);
+    if (takeHome <= 0) {
+      summary = `Wholesale: $${cost.toFixed(2)} · Stripe fee: $${stripeFee.toFixed(2)}${PLATFORM_FEE_PCT > 0 ? ` · Platform fee: $${platformFee.toFixed(2)}` : ""} · LOSS after fees: $${(-takeHome).toFixed(2)}`;
+    } else {
+      const takeHomePct = (takeHome / retail) * 100;
+      const platformFeePart =
+        PLATFORM_FEE_PCT > 0 ? ` · Platform fee: $${platformFee.toFixed(2)}` : "";
+      summary = `Wholesale: $${cost.toFixed(2)} · Stripe fee: $${stripeFee.toFixed(2)}${platformFeePart} · Take-home: $${takeHome.toFixed(2)} (${takeHomePct.toFixed(1)}%)`;
+    }
   }
 
   return (
