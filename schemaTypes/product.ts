@@ -239,7 +239,7 @@ export const product = defineType({
   preview: {
     select: {
       title: "title",
-      media: "images.0",
+      media: "images.0.asset",
       price: "price",
       category: "category",
       inStock: "inStock",

@@ -179,17 +179,17 @@ export const printSet = defineType({
     select: {
       title: "title",
       previewImage: "previewImage",
-      firstImage: "images.0",
+      firstImageAsset: "images.0.asset",
       images: "images",
       price: "price",
     },
-    prepare({ title, previewImage, firstImage, images, price }: any) {
+    prepare({ title, previewImage, firstImageAsset, images, price }: any) {
       const count = Array.isArray(images) ? images.length : 0;
       const countText = count === 0 ? "No prints yet" : `${count} print${count === 1 ? "" : "s"}`;
       const priceText = typeof price === "number" ? `$${price}` : "No price";
       return {
         title,
-        media: previewImage ?? firstImage,
+        media: previewImage ?? firstImageAsset,
         subtitle: `${countText} · ${priceText}`,
       };
     },
