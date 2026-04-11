@@ -1,0 +1,227 @@
+/**
+ * LumaPrints Catalog — wholesale costs and product metadata for Shop V2.
+ *
+ * Source of truth for what LumaPrints sells, what we call it, and what it
+ * costs us wholesale. The custom field component RetailPriceWithMargin reads
+ * from this file to display wholesale cost + computed margin next to the
+ * photographer's retail price input in Sanity Studio.
+ *
+ * Each photographer client studio bundles this file via template updates.
+ * To update wholesale costs across all client studios, update this file in
+ * every studio repo.
+ *
+ * Cost data sourced from the LumaPrints partner reference doc at
+ * `~/Documents/quilt/02_reference/lumaprints-api-reference.md`.
+ *
+ * Catalog availability verified 2026-04-10 against the LumaPrints production
+ * shipping pricing API via `angelsrest/scripts/verify-lumaprints-catalog.ts`
+ * — all 7 papers × 27 sizes = 189 combinations are accepted by the API.
+ * Only the 48 combinations with published wholesale costs are seeded here
+ * (8 sizes × 6 papers). Add more as cost data becomes available — no schema
+ * changes required, just extend `LUMA_PAPERS`, `LUMA_SIZES`, and
+ * `LUMA_WHOLESALE_COSTS` arrays.
+ *
+ * Excluded papers:
+ * - Metallic (103006): excluded per spec note Q1 (audit #23)
+ * - Semi-Matte (103008): pending wholesale cost data
+ *
+ * Excluded sizes (pending cost data): 8×8, 8.5×11, 8×12, 10×10, 11×17,
+ * 12×12, 12×16, 12×24, 12×36, 16×16, 16×24, 16×32, 20×20, 20×60, 24×24,
+ * 24×30, 30×30, 30×60, 40×40
+ */
+
+export interface LumaPaper {
+  /** LumaPrints subcategory ID, used in order submission */
+  subcategoryId: number;
+  /** URL-safe stable identifier, used as the dropdown value */
+  slug: string;
+  /** Display name shown in dropdowns and shop UI */
+  name: string;
+  /** Paper weight in grams per square meter, or null if unspecified */
+  gsm: number | null;
+  /** Short description for product page tooltips */
+  description: string;
+}
+
+export interface LumaSize {
+  /** Print width in inches */
+  width: number;
+  /** Print height in inches */
+  height: number;
+  /** URL-safe stable identifier, used as the dropdown value */
+  slug: string;
+  /** Display label, e.g. "8×10" */
+  label: string;
+}
+
+export interface LumaCatalogEntry {
+  paperSlug: string;
+  sizeSlug: string;
+  /** Wholesale cost in USD */
+  wholesaleCost: number;
+}
+
+/**
+ * 6 Fine Art Paper types we currently have wholesale cost data for.
+ */
+export const LUMA_PAPERS: LumaPaper[] = [
+  {
+    subcategoryId: 103001,
+    slug: "archival-matte",
+    name: "Archival Matte",
+    gsm: 230,
+    description:
+      "Bright white archival paper with a matte finish. Instant-dry, smudge-resistant, suited for everyday photo prints and gallery walls.",
+  },
+  {
+    subcategoryId: 103007,
+    slug: "glossy",
+    name: "Glossy",
+    gsm: 260,
+    description:
+      "Ultra-smooth high-gloss finish that delivers vibrant color and deep blacks. Best for landscapes, portraits, and high-contrast images.",
+  },
+  {
+    subcategoryId: 103002,
+    slug: "hot-press",
+    name: "Hot Press",
+    gsm: 330,
+    description:
+      "100% cotton rag fine art paper with a smooth, neutral white surface. Wide color gamut, archival-grade. A classic for fine art reproduction.",
+  },
+  {
+    subcategoryId: 103003,
+    slug: "cold-press",
+    name: "Cold Press",
+    gsm: 340,
+    description:
+      "100% cotton rag fine art paper with a heavily textured surface that mimics watercolor paper. Tactile, painterly, archival.",
+  },
+  {
+    subcategoryId: 103005,
+    slug: "semi-glossy-luster",
+    name: "Semi-Glossy (Luster)",
+    gsm: 250,
+    description:
+      "Resin-coated satin finish with no glare and no fingerprints. Industry-standard for portrait and event photography.",
+  },
+  {
+    subcategoryId: 103009,
+    slug: "somerset-velvet",
+    name: "Somerset Velvet",
+    gsm: 255,
+    description:
+      "100% cotton rag with a soft velvet surface and rich blacks. Premium fine art paper for galleries and collectors.",
+  },
+];
+
+/**
+ * 8 sizes we currently have wholesale cost data for. All verified accepted
+ * by the LumaPrints API on 2026-04-10.
+ */
+export const LUMA_SIZES: LumaSize[] = [
+  { width: 4, height: 6, slug: "4x6", label: "4×6" },
+  { width: 5, height: 7, slug: "5x7", label: "5×7" },
+  { width: 8, height: 10, slug: "8x10", label: "8×10" },
+  { width: 11, height: 14, slug: "11x14", label: "11×14" },
+  { width: 16, height: 20, slug: "16x20", label: "16×20" },
+  { width: 24, height: 36, slug: "24x36", label: "24×36" },
+  { width: 30, height: 40, slug: "30x40", label: "30×40" },
+  { width: 40, height: 60, slug: "40x60", label: "40×60" },
+];
+
+/**
+ * 6 papers × 8 sizes = 48 wholesale cost entries from the LumaPrints
+ * partner reference doc (2026-04-10).
+ */
+export const LUMA_WHOLESALE_COSTS: LumaCatalogEntry[] = [
+  // Archival Matte
+  { paperSlug: "archival-matte", sizeSlug: "4x6", wholesaleCost: 1.71 },
+  { paperSlug: "archival-matte", sizeSlug: "5x7", wholesaleCost: 2.01 },
+  { paperSlug: "archival-matte", sizeSlug: "8x10", wholesaleCost: 3.19 },
+  { paperSlug: "archival-matte", sizeSlug: "11x14", wholesaleCost: 5.01 },
+  { paperSlug: "archival-matte", sizeSlug: "16x20", wholesaleCost: 8.89 },
+  { paperSlug: "archival-matte", sizeSlug: "24x36", wholesaleCost: 21.1 },
+  { paperSlug: "archival-matte", sizeSlug: "30x40", wholesaleCost: 28.44 },
+  { paperSlug: "archival-matte", sizeSlug: "40x60", wholesaleCost: 54.43 },
+
+  // Glossy
+  { paperSlug: "glossy", sizeSlug: "4x6", wholesaleCost: 3.02 },
+  { paperSlug: "glossy", sizeSlug: "5x7", wholesaleCost: 3.45 },
+  { paperSlug: "glossy", sizeSlug: "8x10", wholesaleCost: 5.09 },
+  { paperSlug: "glossy", sizeSlug: "11x14", wholesaleCost: 7.61 },
+  { paperSlug: "glossy", sizeSlug: "16x20", wholesaleCost: 12.99 },
+  { paperSlug: "glossy", sizeSlug: "24x36", wholesaleCost: 29.96 },
+  { paperSlug: "glossy", sizeSlug: "30x40", wholesaleCost: 40.16 },
+  { paperSlug: "glossy", sizeSlug: "40x60", wholesaleCost: 76.24 },
+
+  // Hot Press
+  { paperSlug: "hot-press", sizeSlug: "4x6", wholesaleCost: 2.86 },
+  { paperSlug: "hot-press", sizeSlug: "5x7", wholesaleCost: 3.24 },
+  { paperSlug: "hot-press", sizeSlug: "8x10", wholesaleCost: 4.68 },
+  { paperSlug: "hot-press", sizeSlug: "11x14", wholesaleCost: 6.9 },
+  { paperSlug: "hot-press", sizeSlug: "16x20", wholesaleCost: 11.64 },
+  { paperSlug: "hot-press", sizeSlug: "24x36", wholesaleCost: 26.55 },
+  { paperSlug: "hot-press", sizeSlug: "30x40", wholesaleCost: 35.53 },
+  { paperSlug: "hot-press", sizeSlug: "40x60", wholesaleCost: 67.31 },
+
+  // Cold Press
+  { paperSlug: "cold-press", sizeSlug: "4x6", wholesaleCost: 2.86 },
+  { paperSlug: "cold-press", sizeSlug: "5x7", wholesaleCost: 3.24 },
+  { paperSlug: "cold-press", sizeSlug: "8x10", wholesaleCost: 4.68 },
+  { paperSlug: "cold-press", sizeSlug: "11x14", wholesaleCost: 6.9 },
+  { paperSlug: "cold-press", sizeSlug: "16x20", wholesaleCost: 11.64 },
+  { paperSlug: "cold-press", sizeSlug: "24x36", wholesaleCost: 26.55 },
+  { paperSlug: "cold-press", sizeSlug: "30x40", wholesaleCost: 35.53 },
+  { paperSlug: "cold-press", sizeSlug: "40x60", wholesaleCost: 67.31 },
+
+  // Semi-Glossy (Luster)
+  { paperSlug: "semi-glossy-luster", sizeSlug: "4x6", wholesaleCost: 1.71 },
+  { paperSlug: "semi-glossy-luster", sizeSlug: "5x7", wholesaleCost: 2.01 },
+  { paperSlug: "semi-glossy-luster", sizeSlug: "8x10", wholesaleCost: 3.19 },
+  { paperSlug: "semi-glossy-luster", sizeSlug: "11x14", wholesaleCost: 5.01 },
+  { paperSlug: "semi-glossy-luster", sizeSlug: "16x20", wholesaleCost: 8.89 },
+  { paperSlug: "semi-glossy-luster", sizeSlug: "24x36", wholesaleCost: 21.1 },
+  { paperSlug: "semi-glossy-luster", sizeSlug: "30x40", wholesaleCost: 28.44 },
+  { paperSlug: "semi-glossy-luster", sizeSlug: "40x60", wholesaleCost: 54.43 },
+
+  // Somerset Velvet
+  { paperSlug: "somerset-velvet", sizeSlug: "4x6", wholesaleCost: 3.02 },
+  { paperSlug: "somerset-velvet", sizeSlug: "5x7", wholesaleCost: 3.45 },
+  { paperSlug: "somerset-velvet", sizeSlug: "8x10", wholesaleCost: 5.09 },
+  { paperSlug: "somerset-velvet", sizeSlug: "11x14", wholesaleCost: 7.61 },
+  { paperSlug: "somerset-velvet", sizeSlug: "16x20", wholesaleCost: 12.99 },
+  { paperSlug: "somerset-velvet", sizeSlug: "24x36", wholesaleCost: 29.96 },
+  { paperSlug: "somerset-velvet", sizeSlug: "30x40", wholesaleCost: 40.16 },
+  { paperSlug: "somerset-velvet", sizeSlug: "40x60", wholesaleCost: 76.24 },
+];
+
+/** Look up wholesale cost by paper + size slug. Returns null if not in catalog. */
+export function getWholesaleCost(paperSlug: string, sizeSlug: string): number | null {
+  const entry = LUMA_WHOLESALE_COSTS.find(
+    (e) => e.paperSlug === paperSlug && e.sizeSlug === sizeSlug,
+  );
+  return entry?.wholesaleCost ?? null;
+}
+
+/** Look up the full paper definition by slug. */
+export function getPaperBySlug(slug: string): LumaPaper | null {
+  return LUMA_PAPERS.find((p) => p.slug === slug) ?? null;
+}
+
+/** Look up the full size definition by slug. */
+export function getSizeBySlug(slug: string): LumaSize | null {
+  return LUMA_SIZES.find((s) => s.slug === slug) ?? null;
+}
+
+/** Dropdown options for the variant `paper` field. */
+export const PAPER_DROPDOWN_OPTIONS = LUMA_PAPERS.map((p) => ({
+  title: p.name,
+  value: p.slug,
+}));
+
+/** Dropdown options for the variant `size` field. */
+export const SIZE_DROPDOWN_OPTIONS = LUMA_SIZES.map((s) => ({
+  title: s.label,
+  value: s.slug,
+}));

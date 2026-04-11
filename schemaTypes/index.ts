@@ -20,6 +20,7 @@ import { coupon } from "./coupon";
 // Custom schemas for Angel's Rest
 import { gallery } from "./gallery";
 import { inquiry } from "./inquiry";
+import { lumaProductV2 } from "./lumaProductV2";
 import { order } from "./order";
 import post from "./post";
 import { printCollection } from "./printCollection";
@@ -33,7 +34,8 @@ export const schemaTypes = [
   printCollection, // Print collections for shop
   printSet, // Print sets (bundles)
   coupon, // Discount codes
-  product, // Shop products
+  product, // Shop products (legacy — replaced by lumaProductV2 once SHOP_V2_ENABLED flips)
+  lumaProductV2, // Shop V2 print products with paper × size variant matrix and inline cost/margin
   about, // About page content
   order, // Order history
 

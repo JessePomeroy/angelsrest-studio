@@ -128,6 +128,20 @@ export default defineConfig({
             S.divider(),
 
             // ═══════════════════════════════════════
+            // Shop V2 (audit #23 — behind SHOP_V2_ENABLED flag)
+            // ═══════════════════════════════════════
+            S.listItem()
+              .title("Shop V2 (Print Products)")
+              .schemaType("lumaProductV2")
+              .child(
+                S.documentTypeList("lumaProductV2")
+                  .title("Print Products (V2)")
+                  .defaultOrdering([{ field: "_createdAt", direction: "desc" }]),
+              ),
+
+            S.divider(),
+
+            // ═══════════════════════════════════════
             // Inquiries
             // ═══════════════════════════════════════
             S.listItem()

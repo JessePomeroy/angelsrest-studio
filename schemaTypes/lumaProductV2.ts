@@ -1,0 +1,158 @@
+/**
+ * LumaPrints Product (Shop V2)
+ *
+ * Replacement for the legacy `product` schema. Each `lumaProductV2` doc is
+ * one photo sold across multiple paper × size variants. Each variant has
+ * its own retail price + enabled toggle, and Sanity Studio shows wholesale
+ * cost + computed margin inline next to the retail price input via the
+ * `RetailPriceWithMargin` custom field component.
+ *
+ * Currently scoped to Fine Art Paper variants. Canvas, framed FAP, and
+ * bordered prints (Sharp-composited) will be added in follow-up audit #23
+ * PRs as additional variant types or sibling product schemas.
+ *
+ * The legacy `product` schema is intentionally untouched and continues to
+ * power the existing /shop pages until the SHOP_V2_ENABLED flag is flipped
+ * on the launch PR (audit #23, final stack PR).
+ *
+ * TODO (follow-up PR): replace the manual variants array with a matrix UI
+ * (rows = papers, columns = sizes) that auto-populates all 48 combinations
+ * and lets the photographer toggle/edit prices in a single grid view.
+ */
+
+import { defineArrayMember, defineField, defineType } from "sanity";
+import { RetailPriceWithMargin } from "./components/RetailPriceWithMargin";
+import {
+  getPaperBySlug,
+  getSizeBySlug,
+  PAPER_DROPDOWN_OPTIONS,
+  SIZE_DROPDOWN_OPTIONS,
+} from "./constants/lumaprintsCatalog";
+
+export const lumaProductV2 = defineType({
+  name: "lumaProductV2",
+  title: "Print Product (V2)",
+  type: "document",
+
+  fields: [
+    defineField({
+      name: "title",
+      title: "Title",
+      type: "string",
+      validation: (rule) => rule.required(),
+    }),
+
+    defineField({
+      name: "slug",
+      title: "Slug",
+      type: "slug",
+      options: { source: "title", maxLength: 96 },
+      validation: (rule) => rule.required(),
+    }),
+
+    defineField({
+      name: "image",
+      title: "Photo",
+      description: "The photograph that gets printed. This is the file LumaPrints prints from.",
+      type: "image",
+      options: { hotspot: true },
+      fields: [{ name: "alt", type: "string", title: "Alternative text" }],
+      validation: (rule) => rule.required(),
+    }),
+
+    defineField({
+      name: "description",
+      title: "Description",
+      type: "text",
+      rows: 4,
+      description: "Shown on the product detail page. Story behind the photo, location, etc.",
+    }),
+
+    defineField({
+      name: "variants",
+      title: "Variants",
+      description:
+        "Each variant is one paper + size combo. Add the variants you want to sell, set retail prices, and toggle enabled. Wholesale cost and margin display next to each price field.",
+      type: "array",
+      of: [
+        defineArrayMember({
+          type: "object",
+          name: "lumaProductVariant",
+          fields: [
+            defineField({
+              name: "paper",
+              title: "Paper",
+              type: "string",
+              options: { list: PAPER_DROPDOWN_OPTIONS },
+              validation: (rule) => rule.required(),
+            }),
+            defineField({
+              name: "size",
+              title: "Size",
+              type: "string",
+              options: { list: SIZE_DROPDOWN_OPTIONS },
+              validation: (rule) => rule.required(),
+            }),
+            defineField({
+              name: "retailPrice",
+              title: "Retail Price (USD)",
+              type: "number",
+              validation: (rule) => rule.required().positive(),
+              components: { field: RetailPriceWithMargin },
+            }),
+            defineField({
+              name: "enabled",
+              title: "Enabled",
+              type: "boolean",
+              initialValue: true,
+              description: "Uncheck to hide this variant from the shop without deleting it.",
+            }),
+          ],
+          preview: {
+            select: {
+              paper: "paper",
+              size: "size",
+              retailPrice: "retailPrice",
+              enabled: "enabled",
+            },
+            prepare({ paper, size, retailPrice, enabled }) {
+              const paperDef = paper ? getPaperBySlug(paper) : null;
+              const sizeDef = size ? getSizeBySlug(size) : null;
+              const label = `${paperDef?.name ?? paper ?? "?"} ${sizeDef?.label ?? size ?? "?"}`;
+              const price = typeof retailPrice === "number" ? `$${retailPrice}` : "no price";
+              return {
+                title: label,
+                subtitle: `${price}${enabled === false ? " · disabled" : ""}`,
+              };
+            },
+          },
+        }),
+      ],
+    }),
+
+    defineField({
+      name: "inStock",
+      title: "In Stock",
+      type: "boolean",
+      initialValue: true,
+    }),
+
+    defineField({
+      name: "featured",
+      title: "Featured",
+      type: "boolean",
+      initialValue: false,
+      description: "Highlight this product on the homepage or shop page?",
+    }),
+  ],
+
+  preview: {
+    select: {
+      title: "title",
+      media: "image",
+    },
+    prepare({ title, media }) {
+      return { title, media, subtitle: "Print Product (V2)" };
+    },
+  },
+});
