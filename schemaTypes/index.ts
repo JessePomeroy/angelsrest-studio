@@ -17,7 +17,7 @@ import blockContent from "./blockContent";
 import category from "./category";
 import { contactPage } from "./contactPage";
 import { coupon } from "./coupon";
-// Custom schemas for Angel's Rest
+// Custom schemas for the photographer studio
 import { gallery } from "./gallery";
 import { inquiry } from "./inquiry";
 import { lumaProductV2 } from "./lumaProductV2";

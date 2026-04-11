@@ -1,9 +1,10 @@
 import { defineCliConfig } from "sanity/cli";
+import { clientConfig } from "./client.config";
 
 export default defineCliConfig({
   api: {
-    projectId: "n7rvza4g",
-    dataset: "production",
+    projectId: clientConfig.projectId,
+    dataset: clientConfig.dataset,
   },
   deployment: {
     /**
@@ -12,13 +13,11 @@ export default defineCliConfig({
      */
     autoUpdates: true,
     /**
-     * App ID for the deployed studio at https://angelsrest.sanity.studio/.
-     * Pinning this here means future `sanity deploy` runs don't prompt
-     * for an application ID — important for non-interactive deploys
-     * (CI, agent-driven sessions) and for client studio repos cloned
-     * from this template (they'll need their own appId after their
-     * first deploy, but the structure is set up for it).
+     * App ID for the deployed studio. Pinning this in client.config.ts means
+     * `sanity deploy` runs non-interactively — important for CI / agent
+     * sessions. For a fresh client studio, leave it empty on first deploy
+     * and Sanity will prompt; then save the returned appId to client.config.ts.
      */
-    appId: "v36dvbb34bxdmx0g3gel8pua",
+    appId: clientConfig.appId,
   },
 });

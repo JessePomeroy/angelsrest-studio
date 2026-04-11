@@ -15,6 +15,7 @@ import { visionTool } from "@sanity/vision";
 import { defineConfig } from "sanity";
 import { presentationTool } from "sanity/presentation";
 import { structureTool } from "sanity/structure";
+import { clientConfig } from "./client.config";
 import { schemaTypes } from "./schemaTypes";
 import { DashboardHome } from "./src/components/DashboardHome";
 
@@ -24,15 +25,15 @@ const SINGLETON_ACTIONS = new Set(["publish", "discardChanges", "restore"]);
 
 export default defineConfig({
   name: "default",
-  title: "Angel's Rest Studio",
-  projectId: "n7rvza4g",
-  dataset: "production",
+  title: clientConfig.studioTitle,
+  projectId: clientConfig.projectId,
+  dataset: clientConfig.dataset,
 
   plugins: [
     structureTool({
       structure: (S, context) =>
         S.list()
-          .title("Angel's Rest")
+          .title(clientConfig.studioTitle)
           .items([
             // ═══════════════════════════════════════
             // Dashboard

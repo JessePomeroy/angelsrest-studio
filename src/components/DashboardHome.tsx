@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useClient } from "sanity";
+import { clientConfig } from "../../client.config";
 
 interface Stats {
   galleries: number;
@@ -67,8 +68,8 @@ export function DashboardHome() {
 
   return (
     <div style={styles.container}>
-      <h1 style={styles.heading}>Angel&apos;s Rest Studio</h1>
-      <p style={styles.subtitle}>Welcome back. Here&apos;s your overview.</p>
+      <h1 style={styles.heading}>{clientConfig.dashboardHeading}</h1>
+      <p style={styles.subtitle}>{clientConfig.dashboardSubtitle}</p>
 
       {/* Stats Cards */}
       <div style={styles.grid}>
@@ -128,7 +129,7 @@ export function DashboardHome() {
         <h2 style={styles.sectionTitle}>Quick Actions</h2>
         <div style={styles.actions}>
           <a
-            href="https://angelsrest.online"
+            href={clientConfig.liveSiteUrl}
             target="_blank"
             rel="noopener noreferrer"
             style={styles.actionLink}
@@ -136,7 +137,7 @@ export function DashboardHome() {
             View Live Site
           </a>
           <a
-            href="https://angelsrest.online/admin/orders"
+            href={clientConfig.adminDashboardUrl}
             target="_blank"
             rel="noopener noreferrer"
             style={styles.actionLink}
