@@ -239,6 +239,54 @@ export function getFrameWholesaleCost(sizeSlug: string): number | null {
   return FRAME_WHOLESALE_COSTS["0.875"]?.[sizeSlug] ?? null;
 }
 
+/**
+ * Canvas wholesale costs by thickness and size. Queried from LumaPrints
+ * product pricing API 2026-04-12. Canvas starts at 8×10 (no small sizes).
+ * Wrap is always Solid Black (option 3).
+ */
+export const CANVAS_WHOLESALE_COSTS: Record<string, Record<string, number>> = {
+  "0.75": {
+    "8x10": 9.89,
+    "11x14": 12.09,
+    "16x20": 24.35,
+    "24x36": 39.56,
+    "30x40": 66.85,
+    "40x60": 120.12,
+  },
+  "1.25": {
+    "8x10": 10.99,
+    "11x14": 13.19,
+    "16x20": 25.95,
+    "24x36": 42.21,
+    "30x40": 50.99,
+    "40x60": 112.07,
+  },
+  "1.50": {
+    "8x10": 12.09,
+    "11x14": 14.29,
+    "16x20": 30.73,
+    "24x36": 50.19,
+    "30x40": 60.29,
+    "40x60": 131.03,
+  },
+  rolled: {
+    "8x10": 9.13,
+    "11x14": 12.2,
+    "16x20": 14.92,
+    "24x36": 24.8,
+    "30x40": 32.83,
+    "40x60": 51.51,
+  },
+};
+
+/** Get canvas wholesale cost for a thickness + size combo. */
+export function getCanvasWholesaleCost(thickness: string, sizeSlug: string): number | null {
+  return CANVAS_WHOLESALE_COSTS[thickness]?.[sizeSlug] ?? null;
+}
+
+/** Sizes available for canvas (8×10 and up). */
+export const CANVAS_AVAILABLE_SIZES = ["8x10", "11x14", "16x20", "24x36", "30x40", "40x60"];
+
 /** Look up wholesale cost by paper + size slug. Returns null if not in catalog. */
 export function getWholesaleCost(paperSlug: string, sizeSlug: string): number | null {
   const entry = LUMA_WHOLESALE_COSTS.find(
