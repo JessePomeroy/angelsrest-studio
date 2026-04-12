@@ -161,6 +161,17 @@ export const lumaProductV2 = defineType({
     }),
 
     defineField({
+      name: "frameMarkupMultiplier",
+      title: "Frame Markup Multiplier",
+      type: "number",
+      group: "settings",
+      initialValue: 2,
+      description: "Frame price = wholesale cost × this multiplier. Default 2× (100% markup).",
+      hidden: ({ parent }) => !parent?.framedEnabled,
+      validation: (rule) => rule.min(1).positive(),
+    }),
+
+    defineField({
       name: "inStock",
       title: "In Stock",
       type: "boolean",
