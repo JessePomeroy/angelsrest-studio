@@ -186,20 +186,34 @@ export default defineConfig({
             // ═══════════════════════════════════════
             S.listItem()
               .title("Products")
-              .schemaType("product")
               .child(
                 S.list()
                   .title("Products")
                   .items([
                     S.listItem()
-                      .title("All Products")
+                      .title("Print Products")
+                      .schemaType("lumaProductV2")
                       .child(
-                        S.documentTypeList("product")
-                          .title("All Products")
-                          .defaultOrdering([{ field: "orderRank", direction: "asc" }]),
+                        S.documentTypeList("lumaProductV2")
+                          .title("Print Products")
+                          .defaultOrdering([{ field: "_createdAt", direction: "desc" }]),
                       ),
+                    S.listItem()
+                      .title("Print Sets")
+                      .schemaType("lumaPrintSetV2")
+                      .child(
+                        S.documentTypeList("lumaPrintSetV2")
+                          .title("Print Sets")
+                          .defaultOrdering([{ field: "_createdAt", direction: "desc" }]),
+                      ),
+                    orderableDocumentListDeskItem({
+                      type: "printCollection",
+                      title: "Print Collections",
+                      S,
+                      context,
+                    }),
                     S.divider(),
-                    ...["prints", "postcards", "tapestries", "digital", "merchandise"].map((cat) =>
+                    ...["postcards", "tapestries", "digital", "merchandise"].map((cat) =>
                       S.listItem()
                         .title(cat.charAt(0).toUpperCase() + cat.slice(1))
                         .child(
@@ -211,48 +225,13 @@ export default defineConfig({
                             .defaultOrdering([{ field: "orderRank", direction: "asc" }]),
                         ),
                     ),
+                    S.divider(),
+                    S.listItem()
+                      .title("Coupons")
+                      .schemaType("coupon")
+                      .child(S.documentTypeList("coupon").title("Coupons")),
                   ]),
               ),
-
-            orderableDocumentListDeskItem({
-              type: "printCollection",
-              title: "Print Collections",
-              S,
-              context,
-            }),
-
-            // V1 Print Sets hidden — 2 docs remain but will be recreated as
-            // lumaPrintSetV2 and deleted. See "Shop V2 (Print Sets)" below.
-            // orderableDocumentListDeskItem({
-            //   type: "printSet",
-            //   title: "Print Sets",
-            //   S,
-            //   context,
-            // }),
-
-            S.listItem()
-              .title("Coupons")
-              .schemaType("coupon")
-              .child(S.documentTypeList("coupon").title("Coupons")),
-
-            S.divider(),
-
-            // ═══════════════════════════════════════
-            // Prints
-            // ═══════════════════════════════════════
-            listWithEmptyState(
-              "lumaProductV2",
-              "Print Products",
-              "No print products yet",
-              "Print products are individual photographs you sell as prints. Each product has one photo and multiple paper × size variants with pricing. Create your first print product to start selling.",
-            ),
-
-            listWithEmptyState(
-              "lumaPrintSetV2",
-              "Print Sets",
-              "No print sets yet",
-              "Print sets are curated bundles of photographs sold together at a set price. Add your images, pick paper × size variants, and set bundle pricing.",
-            ),
 
             S.divider(),
 
