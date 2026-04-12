@@ -29,11 +29,7 @@
 import { Stack, Text } from "@sanity/ui";
 import type { FieldProps } from "sanity";
 import { useFormValue } from "sanity";
-import {
-  getCanvasWholesaleCost,
-  getFrameWholesaleCost,
-  getWholesaleCost,
-} from "../constants/lumaprintsCatalog";
+import { getFrameWholesaleCost, getWholesaleCost } from "../constants/lumaprintsCatalog";
 
 interface VariantContext {
   paper?: string;
@@ -41,8 +37,6 @@ interface VariantContext {
 }
 
 interface DocumentContext {
-  canvasEnabled?: boolean;
-  canvasMarkupMultiplier?: number;
   framedEnabled?: boolean;
   frameMarkupMultiplier?: number;
 }
@@ -110,9 +104,11 @@ export function RetailPriceWithMargin(props: FieldProps) {
     }
   }
 
-  // Framed margin line — shown when framedEnabled is on and we have enough data
+  const isCanvas = variant?.paper?.startsWith("canvas-") ?? false;
+
+  // Framed margin line — shown when framedEnabled is on (not for canvas — framing is FAP only)
   let framedSummary: string | null = null;
-  if (doc?.framedEnabled && variant?.size && cost !== null && retail > 0) {
+  if (doc?.framedEnabled && !isCanvas && variant?.size && cost !== null && retail > 0) {
     const frameCost = getFrameWholesaleCost(variant.size);
     if (frameCost !== null) {
       const multiplier = doc.frameMarkupMultiplier ?? 2;
@@ -128,23 +124,6 @@ export function RetailPriceWithMargin(props: FieldProps) {
     }
   }
 
-  // Canvas margin line — shown when canvasEnabled is on
-  let canvasSummary: string | null = null;
-  if (doc?.canvasEnabled && variant?.size && retail > 0) {
-    const canvasCost = getCanvasWholesaleCost("0.75", variant.size);
-    if (canvasCost !== null) {
-      const multiplier = doc.canvasMarkupMultiplier ?? 2;
-      const canvasSurcharge = canvasCost * multiplier;
-      const canvasRetail = retail + canvasSurcharge;
-      const { stripeFee: cStripeFee, takeHome: cTakeHome } = computeFeeBreakdown(
-        canvasRetail,
-        canvasCost,
-      );
-      const cPct = (cTakeHome / canvasRetail) * 100;
-      canvasSummary = `Canvas (0.75"): retail $${canvasRetail.toFixed(2)} · wholesale $${canvasCost.toFixed(2)} · Stripe $${cStripeFee.toFixed(2)} · Take-home: $${cTakeHome.toFixed(2)} (${cPct.toFixed(1)}%)`;
-    }
-  }
-
   return (
     <Stack space={2}>
       {props.renderDefault(props)}
@@ -154,11 +133,6 @@ export function RetailPriceWithMargin(props: FieldProps) {
       {framedSummary && (
         <Text size={1} muted>
           {framedSummary}
-        </Text>
-      )}
-      {canvasSummary && (
-        <Text size={1} muted>
-          {canvasSummary}
         </Text>
       )}
     </Stack>
