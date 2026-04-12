@@ -16,8 +16,8 @@
  * Catalog availability verified 2026-04-10 against the LumaPrints production
  * shipping pricing API via `angelsrest/scripts/verify-lumaprints-catalog.ts`
  * — all 7 papers × 27 sizes = 189 combinations are accepted by the API.
- * Only the 48 combinations with published wholesale costs are seeded here
- * (8 sizes × 6 papers). Add more as cost data becomes available — no schema
+ * Only the 54 combinations with published wholesale costs are seeded here
+ * (9 sizes × 6 papers). Add more as cost data becomes available — no schema
  * changes required, just extend `LUMA_PAPERS`, `LUMA_SIZES`, and
  * `LUMA_WHOLESALE_COSTS` arrays.
  *
@@ -116,12 +116,14 @@ export const LUMA_PAPERS: LumaPaper[] = [
 ];
 
 /**
- * 8 sizes we currently have wholesale cost data for. All verified accepted
- * by the LumaPrints API on 2026-04-10.
+ * 9 sizes we currently have wholesale cost data for. All verified accepted
+ * by the LumaPrints API. 6×9 is a non-standard/custom size (not in LumaPrints'
+ * standard 27) but is accepted and priced via the product pricing API.
  */
 export const LUMA_SIZES: LumaSize[] = [
   { width: 4, height: 6, slug: "4x6", label: "4×6" },
   { width: 5, height: 7, slug: "5x7", label: "5×7" },
+  { width: 6, height: 9, slug: "6x9", label: "6×9" },
   { width: 8, height: 10, slug: "8x10", label: "8×10" },
   { width: 11, height: 14, slug: "11x14", label: "11×14" },
   { width: 16, height: 20, slug: "16x20", label: "16×20" },
@@ -131,13 +133,15 @@ export const LUMA_SIZES: LumaSize[] = [
 ];
 
 /**
- * 6 papers × 8 sizes = 48 wholesale cost entries from the LumaPrints
- * partner reference doc (2026-04-10).
+ * 6 papers × 9 sizes = 54 wholesale cost entries. 6×9 costs sourced from
+ * the LumaPrints product pricing API on 2026-04-11; all other costs from
+ * the partner reference doc (2026-04-10).
  */
 export const LUMA_WHOLESALE_COSTS: LumaCatalogEntry[] = [
   // Archival Matte
   { paperSlug: "archival-matte", sizeSlug: "4x6", wholesaleCost: 1.71 },
   { paperSlug: "archival-matte", sizeSlug: "5x7", wholesaleCost: 2.01 },
+  { paperSlug: "archival-matte", sizeSlug: "6x9", wholesaleCost: 2.53 },
   { paperSlug: "archival-matte", sizeSlug: "8x10", wholesaleCost: 3.19 },
   { paperSlug: "archival-matte", sizeSlug: "11x14", wholesaleCost: 5.01 },
   { paperSlug: "archival-matte", sizeSlug: "16x20", wholesaleCost: 8.89 },
@@ -148,6 +152,7 @@ export const LUMA_WHOLESALE_COSTS: LumaCatalogEntry[] = [
   // Glossy
   { paperSlug: "glossy", sizeSlug: "4x6", wholesaleCost: 3.02 },
   { paperSlug: "glossy", sizeSlug: "5x7", wholesaleCost: 3.45 },
+  { paperSlug: "glossy", sizeSlug: "6x9", wholesaleCost: 4.17 },
   { paperSlug: "glossy", sizeSlug: "8x10", wholesaleCost: 5.09 },
   { paperSlug: "glossy", sizeSlug: "11x14", wholesaleCost: 7.61 },
   { paperSlug: "glossy", sizeSlug: "16x20", wholesaleCost: 12.99 },
@@ -158,6 +163,7 @@ export const LUMA_WHOLESALE_COSTS: LumaCatalogEntry[] = [
   // Hot Press
   { paperSlug: "hot-press", sizeSlug: "4x6", wholesaleCost: 2.86 },
   { paperSlug: "hot-press", sizeSlug: "5x7", wholesaleCost: 3.24 },
+  { paperSlug: "hot-press", sizeSlug: "6x9", wholesaleCost: 3.87 },
   { paperSlug: "hot-press", sizeSlug: "8x10", wholesaleCost: 4.68 },
   { paperSlug: "hot-press", sizeSlug: "11x14", wholesaleCost: 6.9 },
   { paperSlug: "hot-press", sizeSlug: "16x20", wholesaleCost: 11.64 },
@@ -168,6 +174,7 @@ export const LUMA_WHOLESALE_COSTS: LumaCatalogEntry[] = [
   // Cold Press
   { paperSlug: "cold-press", sizeSlug: "4x6", wholesaleCost: 2.86 },
   { paperSlug: "cold-press", sizeSlug: "5x7", wholesaleCost: 3.24 },
+  { paperSlug: "cold-press", sizeSlug: "6x9", wholesaleCost: 3.87 },
   { paperSlug: "cold-press", sizeSlug: "8x10", wholesaleCost: 4.68 },
   { paperSlug: "cold-press", sizeSlug: "11x14", wholesaleCost: 6.9 },
   { paperSlug: "cold-press", sizeSlug: "16x20", wholesaleCost: 11.64 },
@@ -178,6 +185,7 @@ export const LUMA_WHOLESALE_COSTS: LumaCatalogEntry[] = [
   // Semi-Glossy (Luster)
   { paperSlug: "semi-glossy-luster", sizeSlug: "4x6", wholesaleCost: 1.71 },
   { paperSlug: "semi-glossy-luster", sizeSlug: "5x7", wholesaleCost: 2.01 },
+  { paperSlug: "semi-glossy-luster", sizeSlug: "6x9", wholesaleCost: 2.53 },
   { paperSlug: "semi-glossy-luster", sizeSlug: "8x10", wholesaleCost: 3.19 },
   { paperSlug: "semi-glossy-luster", sizeSlug: "11x14", wholesaleCost: 5.01 },
   { paperSlug: "semi-glossy-luster", sizeSlug: "16x20", wholesaleCost: 8.89 },
@@ -188,6 +196,7 @@ export const LUMA_WHOLESALE_COSTS: LumaCatalogEntry[] = [
   // Somerset Velvet
   { paperSlug: "somerset-velvet", sizeSlug: "4x6", wholesaleCost: 3.02 },
   { paperSlug: "somerset-velvet", sizeSlug: "5x7", wholesaleCost: 3.45 },
+  { paperSlug: "somerset-velvet", sizeSlug: "6x9", wholesaleCost: 4.17 },
   { paperSlug: "somerset-velvet", sizeSlug: "8x10", wholesaleCost: 5.09 },
   { paperSlug: "somerset-velvet", sizeSlug: "11x14", wholesaleCost: 7.61 },
   { paperSlug: "somerset-velvet", sizeSlug: "16x20", wholesaleCost: 12.99 },
