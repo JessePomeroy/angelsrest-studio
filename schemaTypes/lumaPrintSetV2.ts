@@ -146,6 +146,21 @@ export const lumaPrintSetV2 = defineType({
               description: "Price for the entire bundle at this paper × size.",
             }),
             defineField({
+              name: "borderWidth",
+              title: "Border Width",
+              type: "string",
+              description: "Optional white border around each print. Leave empty for no border.",
+              options: {
+                list: [
+                  { title: "No border", value: "none" },
+                  { title: '0.25"', value: "0.25" },
+                  { title: '0.5"', value: "0.5" },
+                  { title: '1"', value: "1" },
+                ],
+              },
+              initialValue: "none",
+            }),
+            defineField({
               name: "enabled",
               title: "Enabled",
               type: "boolean",
@@ -159,15 +174,18 @@ export const lumaPrintSetV2 = defineType({
               size: "size",
               retailPrice: "retailPrice",
               enabled: "enabled",
+              borderWidth: "borderWidth",
             },
-            prepare({ paper, size, retailPrice, enabled }) {
+            prepare({ paper, size, retailPrice, enabled, borderWidth }) {
               const paperDef = paper ? getPaperBySlug(paper) : null;
               const sizeDef = size ? getSizeBySlug(size) : null;
               const label = `${paperDef?.name ?? paper ?? "?"} ${sizeDef?.label ?? size ?? "?"}`;
               const price = typeof retailPrice === "number" ? `$${retailPrice} set` : "no price";
+              const border =
+                borderWidth && borderWidth !== "none" ? ` · ${borderWidth}" border` : "";
               return {
                 title: label,
-                subtitle: `${price}${enabled === false ? " · disabled" : ""}`,
+                subtitle: `${price}${border}${enabled === false ? " · disabled" : ""}`,
               };
             },
           },
