@@ -29,11 +29,16 @@
 import { Stack, Text } from "@sanity/ui";
 import type { FieldProps } from "sanity";
 import { useFormValue } from "sanity";
-import { getWholesaleCost } from "../constants/lumaprintsCatalog";
+import { getFrameWholesaleCost, getWholesaleCost } from "../constants/lumaprintsCatalog";
 
 interface VariantContext {
   paper?: string;
   size?: string;
+}
+
+interface DocumentContext {
+  framedEnabled?: boolean;
+  frameMarkupMultiplier?: number;
 }
 
 // Per-studio fee configuration. Read once at module load via import.meta.env
@@ -69,6 +74,7 @@ export function RetailPriceWithMargin(props: FieldProps) {
   // last segment to read the parent variant object via useFormValue.
   const parentPath = props.path.slice(0, -1);
   const variant = useFormValue(parentPath) as VariantContext | undefined;
+  const doc = useFormValue([]) as DocumentContext | undefined;
 
   const cost =
     variant?.paper && variant?.size ? getWholesaleCost(variant.paper, variant.size) : null;
@@ -98,12 +104,35 @@ export function RetailPriceWithMargin(props: FieldProps) {
     }
   }
 
+  // Framed margin line — shown when framedEnabled is on and we have enough data
+  let framedSummary: string | null = null;
+  if (doc?.framedEnabled && variant?.size && cost !== null && retail > 0) {
+    const frameCost = getFrameWholesaleCost(variant.size);
+    if (frameCost !== null) {
+      const multiplier = doc.frameMarkupMultiplier ?? 2;
+      const frameSurcharge = frameCost * multiplier;
+      const framedRetail = retail + frameSurcharge;
+      const framedWholesale = cost + frameCost;
+      const { stripeFee: fStripeFee, takeHome: fTakeHome } = computeFeeBreakdown(
+        framedRetail,
+        framedWholesale,
+      );
+      const fPct = (fTakeHome / framedRetail) * 100;
+      framedSummary = `Framed (0.875"): retail $${framedRetail.toFixed(2)} · wholesale $${framedWholesale.toFixed(2)} · Stripe $${fStripeFee.toFixed(2)} · Take-home: $${fTakeHome.toFixed(2)} (${fPct.toFixed(1)}%)`;
+    }
+  }
+
   return (
     <Stack space={2}>
       {props.renderDefault(props)}
       <Text size={1} muted>
         {summary}
       </Text>
+      {framedSummary && (
+        <Text size={1} muted>
+          {framedSummary}
+        </Text>
+      )}
     </Stack>
   );
 }

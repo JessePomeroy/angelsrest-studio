@@ -205,6 +205,40 @@ export const LUMA_WHOLESALE_COSTS: LumaCatalogEntry[] = [
   { paperSlug: "somerset-velvet", sizeSlug: "40x60", wholesaleCost: 76.24 },
 ];
 
+/**
+ * Frame wholesale costs by size. All colors within a thickness are
+ * the same price. Queried from LumaPrints product pricing API 2026-04-12.
+ */
+export const FRAME_WHOLESALE_COSTS: Record<string, Record<string, number>> = {
+  "0.875": {
+    "4x6": 15.94,
+    "5x7": 16.85,
+    "6x9": 18.33,
+    "8x10": 20.08,
+    "11x14": 24.65,
+    "16x20": 35.12,
+    "24x36": 66.4,
+    "30x40": 84.26,
+    "40x60": 146.31,
+  },
+  "1.25": {
+    "4x6": 16.35,
+    "5x7": 17.34,
+    "6x9": 18.94,
+    "8x10": 20.8,
+    "11x14": 25.66,
+    "16x20": 36.58,
+    "24x36": 68.84,
+    "30x40": 87.12,
+    "40x60": 150.37,
+  },
+};
+
+/** Get the cheapest frame wholesale cost for a given size (0.875" frame). */
+export function getFrameWholesaleCost(sizeSlug: string): number | null {
+  return FRAME_WHOLESALE_COSTS["0.875"]?.[sizeSlug] ?? null;
+}
+
 /** Look up wholesale cost by paper + size slug. Returns null if not in catalog. */
 export function getWholesaleCost(paperSlug: string, sizeSlug: string): number | null {
   const entry = LUMA_WHOLESALE_COSTS.find(
