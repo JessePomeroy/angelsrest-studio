@@ -22,6 +22,7 @@ import { schemaTypes } from "./schemaTypes";
 import { MarkBackInStockAction } from "./schemaTypes/actions/MarkBackInStockAction";
 import { MarkSoldOutAction } from "./schemaTypes/actions/MarkSoldOutAction";
 import { DashboardHome } from "./src/components/DashboardHome";
+import { EmptyState } from "./src/components/EmptyState";
 
 // Singleton document IDs — ensures only one of each exists
 const SINGLETON_TYPES = new Set(["siteSettings", "about", "contactPage"]);
@@ -47,8 +48,33 @@ export default defineConfig({
 
   plugins: [
     structureTool({
-      structure: (S, context) =>
-        S.list()
+      structure: (S, context) => {
+        const client = context.getClient({ apiVersion: "2024-01-01" });
+
+        // Helper: returns the empty state component or the standard list,
+        // depending on whether documents of the given type exist.
+        const listWithEmptyState = (
+          type: string,
+          title: string,
+          emptyTitle: string,
+          emptyDescription: string,
+        ) =>
+          S.listItem()
+            .title(title)
+            .schemaType(type)
+            .child(async () => {
+              const count = await client.fetch(`count(*[_type == $type])`, { type });
+              if (count === 0) {
+                return S.component(EmptyState)
+                  .title(title)
+                  .options({ title: emptyTitle, description: emptyDescription, type });
+              }
+              return S.documentTypeList(type)
+                .title(title)
+                .defaultOrdering([{ field: "_createdAt", direction: "desc" }]);
+            });
+
+        return S.list()
           .title(clientConfig.studioTitle)
           .items([
             // ═══════════════════════════════════════
@@ -214,23 +240,19 @@ export default defineConfig({
             // ═══════════════════════════════════════
             // Shop V2 (audit #23 — behind SHOP_V2_ENABLED flag)
             // ═══════════════════════════════════════
-            S.listItem()
-              .title("Shop V2 (Print Products)")
-              .schemaType("lumaProductV2")
-              .child(
-                S.documentTypeList("lumaProductV2")
-                  .title("Print Products (V2)")
-                  .defaultOrdering([{ field: "_createdAt", direction: "desc" }]),
-              ),
+            listWithEmptyState(
+              "lumaProductV2",
+              "Shop V2 (Print Products)",
+              "No print products yet",
+              "Print products are individual photographs you sell as prints. Each product has one photo and multiple paper × size variants with pricing. Create your first print product to start selling.",
+            ),
 
-            S.listItem()
-              .title("Shop V2 (Print Sets)")
-              .schemaType("lumaPrintSetV2")
-              .child(
-                S.documentTypeList("lumaPrintSetV2")
-                  .title("Print Sets (V2)")
-                  .defaultOrdering([{ field: "_createdAt", direction: "desc" }]),
-              ),
+            listWithEmptyState(
+              "lumaPrintSetV2",
+              "Shop V2 (Print Sets)",
+              "No print sets yet",
+              "Print sets are curated bundles of photographs sold together at a set price. Add your images, pick paper × size variants, and set bundle pricing.",
+            ),
 
             S.divider(),
 
@@ -343,7 +365,12 @@ export default defineConfig({
             // ═══════════════════════════════════════
             // Blog
             // ═══════════════════════════════════════
-            S.listItem().title("Posts").schemaType("post").child(S.documentTypeList("post")),
+            listWithEmptyState(
+              "post",
+              "Posts",
+              "No blog posts yet",
+              "Blog posts help you share stories, behind-the-scenes content, and connect with your audience. Write your first post to get started.",
+            ),
             S.listItem().title("Authors").schemaType("author").child(S.documentTypeList("author")),
             S.listItem()
               .title("Categories")
@@ -363,7 +390,8 @@ export default defineConfig({
                   .title("Site Settings")
                   .defaultOrdering([{ field: "_createdAt", direction: "desc" }]),
               ),
-          ]),
+          ]);
+      },
       defaultDocumentNode: (S, { schemaType }) => {
         if (TYPES_WITH_BACK_REFS.has(schemaType)) {
           return S.document().views([
