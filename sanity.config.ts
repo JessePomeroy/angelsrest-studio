@@ -18,7 +18,6 @@ import { structureTool } from "sanity/structure";
 import DocumentsPane from "sanity-plugin-documents-pane";
 import { clientConfig } from "./client.config";
 import { schemaTypes } from "./schemaTypes";
-import { DuplicateGalleryAction } from "./schemaTypes/actions/DuplicateGalleryAction";
 import { MarkBackInStockAction } from "./schemaTypes/actions/MarkBackInStockAction";
 import { MarkSoldOutAction } from "./schemaTypes/actions/MarkSoldOutAction";
 import { DashboardHome } from "./src/components/DashboardHome";
@@ -406,10 +405,6 @@ export default defineConfig({
       // V2 print products + print sets: add stock toggle actions
       if (STOCK_ACTION_TYPES.has(context.schemaType)) {
         return [...input, MarkSoldOutAction, MarkBackInStockAction];
-      }
-      // Galleries: add duplicate action
-      if (context.schemaType === "gallery") {
-        return [...input, DuplicateGalleryAction];
       }
       return input;
     },
