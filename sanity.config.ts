@@ -41,8 +41,10 @@ export default defineConfig({
             S.listItem().title("Dashboard").child(S.component(DashboardHome).title("Dashboard")),
 
             // ═══════════════════════════════════════
-            // Needs Attention — control tower view
-            // (thresholds: 7d for stale drafts, 2d for unanswered inquiries)
+            // Needs Attention — content health checks
+            // (Operational triage like unanswered inquiries / unfulfilled
+            // orders lives in the admin dashboard, not here. Sanity owns
+            // content health; admin owns operational triage.)
             // ═══════════════════════════════════════
             S.listItem()
               .title("⚠️ Needs Attention")
@@ -61,32 +63,6 @@ export default defineConfig({
                           })
                           .defaultOrdering([{ field: "_updatedAt", direction: "asc" }]),
                       ),
-                    S.listItem()
-                      .title("Unanswered inquiries (>2 days)")
-                      .child(
-                        S.documentList()
-                          .title("Unanswered inquiries")
-                          .schemaType("inquiry")
-                          .filter(
-                            '_type == "inquiry" && status in ["new", "read"] && submittedAt < $twoDaysAgo',
-                          )
-                          .params({
-                            twoDaysAgo: new Date(
-                              Date.now() - 2 * 24 * 60 * 60 * 1000,
-                            ).toISOString(),
-                          })
-                          .defaultOrdering([{ field: "submittedAt", direction: "asc" }]),
-                      ),
-                    S.listItem()
-                      .title("Orders awaiting fulfillment")
-                      .child(
-                        S.documentList()
-                          .title("Awaiting fulfillment")
-                          .schemaType("order")
-                          .filter('_type == "order" && status in ["new", "printing", "ready"]')
-                          .defaultOrdering([{ field: "createdAt", direction: "asc" }]),
-                      ),
-                    S.divider(),
                     S.listItem()
                       .title("Products without prices")
                       .child(
