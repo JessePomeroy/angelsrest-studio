@@ -35,7 +35,7 @@ export const schemaTypes = [
   printCollection, // Print collections for shop
   printSet, // Print sets (bundles)
   coupon, // Discount codes
-  product, // Shop products (legacy — replaced by lumaProductV2 once SHOP_V2_ENABLED flips)
+  product, // Shop products (postcards, tapestries, digital, merchandise — prints use lumaProductV2)
   lumaProductV2, // Shop V2 print products with paper × size variant matrix and inline cost/margin
   lumaPrintSetV2, // Shop V2 print sets — N images per bundle, per-set retail prices, image-count-aware margin
   about, // About page content

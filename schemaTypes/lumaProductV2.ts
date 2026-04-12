@@ -11,9 +11,8 @@
  * bordered prints (Sharp-composited) will be added in follow-up audit #23
  * PRs as additional variant types or sibling product schemas.
  *
- * The legacy `product` schema is intentionally untouched and continues to
- * power the existing /shop pages until the SHOP_V2_ENABLED flag is flipped
- * on the launch PR (audit #23, final stack PR).
+ * The legacy `product` schema still handles non-print products (postcards,
+ * tapestries, digital, merchandise). Print products are fully on V2.
  *
  * TODO (follow-up PR): replace the manual variants array with a matrix UI
  * (rows = papers, columns = sizes) that auto-populates all 48 combinations
