@@ -15,6 +15,7 @@ import { visionTool } from "@sanity/vision";
 import { defineConfig } from "sanity";
 import { presentationTool } from "sanity/presentation";
 import { structureTool } from "sanity/structure";
+import DocumentsPane from "sanity-plugin-documents-pane";
 import { clientConfig } from "./client.config";
 import { schemaTypes } from "./schemaTypes";
 import { DashboardHome } from "./src/components/DashboardHome";
@@ -22,6 +23,15 @@ import { DashboardHome } from "./src/components/DashboardHome";
 // Singleton document IDs — ensures only one of each exists
 const SINGLETON_TYPES = new Set(["siteSettings", "about", "contactPage"]);
 const SINGLETON_ACTIONS = new Set(["publish", "discardChanges", "restore"]);
+
+// Document types that get a "Used in" back-reference tab showing every
+// document that references the current one. Uses sanity-plugin-documents-pane.
+const TYPES_WITH_BACK_REFS = new Set([
+  "gallery",
+  "lumaProductV2",
+  "lumaPrintSetV2",
+  "printCollection",
+]);
 
 export default defineConfig({
   name: "default",
@@ -346,6 +356,22 @@ export default defineConfig({
                   .defaultOrdering([{ field: "_createdAt", direction: "desc" }]),
               ),
           ]),
+      defaultDocumentNode: (S, { schemaType }) => {
+        if (TYPES_WITH_BACK_REFS.has(schemaType)) {
+          return S.document().views([
+            S.view.form(),
+            S.view
+              .component(DocumentsPane)
+              .options({
+                query: "*[references($id)]",
+                params: { id: "_id" },
+                options: { perspective: "previewDrafts" },
+              })
+              .title("Used in"),
+          ]);
+        }
+        return S.document().views([S.view.form()]);
+      },
     }),
 
     presentationTool({

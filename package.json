@@ -26,6 +26,7 @@
     "react": "^19.1",
     "react-dom": "^19.1",
     "sanity": "^5.20.0",
+    "sanity-plugin-documents-pane": "^3.0.2",
     "styled-components": "^6.1.18"
   },
   "devDependencies": {
