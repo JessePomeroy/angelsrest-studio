@@ -18,11 +18,17 @@ import { structureTool } from "sanity/structure";
 import DocumentsPane from "sanity-plugin-documents-pane";
 import { clientConfig } from "./client.config";
 import { schemaTypes } from "./schemaTypes";
+import { DuplicateGalleryAction } from "./schemaTypes/actions/DuplicateGalleryAction";
+import { MarkBackInStockAction } from "./schemaTypes/actions/MarkBackInStockAction";
+import { MarkSoldOutAction } from "./schemaTypes/actions/MarkSoldOutAction";
 import { DashboardHome } from "./src/components/DashboardHome";
 
 // Singleton document IDs — ensures only one of each exists
 const SINGLETON_TYPES = new Set(["siteSettings", "about", "contactPage"]);
 const SINGLETON_ACTIONS = new Set(["publish", "discardChanges", "restore"]);
+
+// Document types that get stock-toggle actions (Mark sold out / Mark back in stock)
+const STOCK_ACTION_TYPES = new Set(["lumaProductV2", "lumaPrintSetV2"]);
 
 // Document types that get a "Used in" back-reference tab showing every
 // document that references the current one. Uses sanity-plugin-documents-pane.
@@ -392,10 +398,20 @@ export default defineConfig({
   },
 
   document: {
-    // For singletons, limit the actions to publish/discard/restore
-    actions: (input, context) =>
-      SINGLETON_TYPES.has(context.schemaType)
-        ? input.filter((action) => SINGLETON_ACTIONS.has(action.action ?? ""))
-        : input,
+    actions: (input, context) => {
+      // Singletons: limit to publish/discard/restore
+      if (SINGLETON_TYPES.has(context.schemaType)) {
+        return input.filter((action) => SINGLETON_ACTIONS.has(action.action ?? ""));
+      }
+      // V2 print products + print sets: add stock toggle actions
+      if (STOCK_ACTION_TYPES.has(context.schemaType)) {
+        return [...input, MarkSoldOutAction, MarkBackInStockAction];
+      }
+      // Galleries: add duplicate action
+      if (context.schemaType === "gallery") {
+        return [...input, DuplicateGalleryAction];
+      }
+      return input;
+    },
   },
 });
