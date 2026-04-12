@@ -64,12 +64,22 @@ export default defineConfig({
                           .defaultOrdering([{ field: "_updatedAt", direction: "asc" }]),
                       ),
                     S.listItem()
-                      .title("Products without prices")
+                      .title("Products without pricing")
                       .child(
                         S.documentList()
-                          .title("Missing prices")
+                          .title("Missing pricing")
+                          // A product is missing pricing if:
+                          //   - fulfillmentType=lumaprints  → needs availablePapers entries
+                          //   - fulfillmentType=self (default) → needs a base price
+                          // Prints often leave the base price blank because each
+                          // paper variant has its own price; don't false-flag them.
                           .schemaType("product")
-                          .filter('_type == "product" && !defined(price)')
+                          .filter(
+                            '_type == "product" && (' +
+                              '(fulfillmentType == "lumaprints" && (!defined(availablePapers) || count(availablePapers) == 0))' +
+                              ' || (fulfillmentType != "lumaprints" && !defined(price))' +
+                              ")",
+                          )
                           .defaultOrdering([{ field: "_updatedAt", direction: "desc" }]),
                       ),
                     S.listItem()
