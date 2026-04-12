@@ -185,6 +185,15 @@ export const lumaPrintSetV2 = defineType({
     }),
 
     defineField({
+      name: "framedEnabled",
+      title: "Offer Framed Option",
+      type: "boolean",
+      group: "settings",
+      initialValue: false,
+      description: "When on, customers can choose a frame. Includes a 0.25\" border and 2\" white mat.",
+    }),
+
+    defineField({
       name: "inStock",
       title: "In Stock",
       type: "boolean",

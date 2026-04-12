@@ -152,6 +152,15 @@ export const lumaProductV2 = defineType({
     }),
 
     defineField({
+      name: "framedEnabled",
+      title: "Offer Framed Option",
+      type: "boolean",
+      group: "settings",
+      initialValue: false,
+      description: "When on, customers can choose a frame (0.875\" or 1.25\" in black/white/oak). Includes a 0.25\" border and 2\" white mat.",
+    }),
+
+    defineField({
       name: "inStock",
       title: "In Stock",
       type: "boolean",
