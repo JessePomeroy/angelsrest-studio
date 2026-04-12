@@ -39,6 +39,8 @@ export const printCollection = defineType({
       title: "Slug",
       type: "slug",
       group: "content",
+      description:
+        "URL path for this page — auto-generated from the title. Only edit if you need a custom URL.",
       options: {
         source: "title",
         maxLength: 96,
@@ -61,6 +63,7 @@ export const printCollection = defineType({
       title: "Preview Image",
       type: "image",
       group: "content",
+      description: "Cover image shown in shop listings and collection pages.",
       options: {
         hotspot: true,
       },

@@ -54,6 +54,8 @@ export const lumaProductV2 = defineType({
       title: "Slug",
       type: "slug",
       group: "content",
+      description:
+        "URL path for this page — auto-generated from the title. Only edit if you need a custom URL.",
       options: { source: "title", maxLength: 96 },
       validation: (rule) => rule.required(),
     }),
@@ -147,6 +149,8 @@ export const lumaProductV2 = defineType({
       type: "boolean",
       group: "settings",
       initialValue: true,
+      description:
+        "Uncheck to show 'Sold Out' on the site. Use the Mark Sold Out action for a one-click version.",
     }),
 
     defineField({
