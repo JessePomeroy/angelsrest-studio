@@ -287,8 +287,25 @@ export function getCanvasWholesaleCost(thickness: string, sizeSlug: string): num
 /** Sizes available for canvas (8×10 and up). */
 export const CANVAS_AVAILABLE_SIZES = ["8x10", "11x14", "16x20", "24x36", "30x40", "40x60"];
 
-/** Look up wholesale cost by paper + size slug. Returns null if not in catalog. */
+/** Check if a paper slug is a canvas type. */
+export function isCanvasPaper(paperSlug: string): boolean {
+  return paperSlug.startsWith("canvas-");
+}
+
+/** Parse a canvas slug into its color and thickness. e.g. "canvas-black-0.75" → { color: "black", thickness: "0.75" } */
+export function parseCanvasSlug(slug: string): { color: string; thickness: string } | null {
+  const match = slug.match(/^canvas-(black|white)-(.+)$/);
+  if (!match) return null;
+  return { color: match[1], thickness: match[2] };
+}
+
+/** Look up wholesale cost by paper + size slug. Handles both papers and canvas. */
 export function getWholesaleCost(paperSlug: string, sizeSlug: string): number | null {
+  if (isCanvasPaper(paperSlug)) {
+    const parsed = parseCanvasSlug(paperSlug);
+    if (!parsed) return null;
+    return getCanvasWholesaleCost(parsed.thickness, sizeSlug);
+  }
   const entry = LUMA_WHOLESALE_COSTS.find(
     (e) => e.paperSlug === paperSlug && e.sizeSlug === sizeSlug,
   );
@@ -305,11 +322,23 @@ export function getSizeBySlug(slug: string): LumaSize | null {
   return LUMA_SIZES.find((s) => s.slug === slug) ?? null;
 }
 
-/** Dropdown options for the variant `paper` field. */
-export const PAPER_DROPDOWN_OPTIONS = LUMA_PAPERS.map((p) => ({
-  title: p.name,
-  value: p.slug,
-}));
+/** Canvas "paper" options — treated like papers in the variant system. */
+export const CANVAS_OPTIONS = [
+  { title: 'Canvas Black — 0.75" stretch', value: "canvas-black-0.75" },
+  { title: 'Canvas Black — 1.25" stretch', value: "canvas-black-1.25" },
+  { title: 'Canvas Black — 1.50" stretch', value: "canvas-black-1.50" },
+  { title: "Canvas Black — rolled", value: "canvas-black-rolled" },
+  { title: 'Canvas White — 0.75" stretch', value: "canvas-white-0.75" },
+  { title: 'Canvas White — 1.25" stretch', value: "canvas-white-1.25" },
+  { title: 'Canvas White — 1.50" stretch', value: "canvas-white-1.50" },
+  { title: "Canvas White — rolled", value: "canvas-white-rolled" },
+];
+
+/** Dropdown options for the variant `paper` field (papers + canvas). */
+export const PAPER_DROPDOWN_OPTIONS = [
+  ...LUMA_PAPERS.map((p) => ({ title: p.name, value: p.slug })),
+  ...CANVAS_OPTIONS,
+];
 
 /** Dropdown options for the variant `size` field. */
 export const SIZE_DROPDOWN_OPTIONS = LUMA_SIZES.map((s) => ({

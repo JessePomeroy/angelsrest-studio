@@ -185,27 +185,6 @@ export const lumaPrintSetV2 = defineType({
     }),
 
     defineField({
-      name: "canvasEnabled",
-      title: "Offer Canvas Option",
-      type: "boolean",
-      group: "settings",
-      initialValue: false,
-      description:
-        "When on, customers can choose canvas. Solid black wrap. Sizes 8×10 and up only.",
-    }),
-
-    defineField({
-      name: "canvasMarkupMultiplier",
-      title: "Canvas Markup Multiplier",
-      type: "number",
-      group: "settings",
-      initialValue: 2,
-      description: "Canvas price = wholesale cost × this multiplier. Default 2×.",
-      hidden: ({ parent }) => !parent?.canvasEnabled,
-      validation: (rule) => rule.min(1).positive(),
-    }),
-
-    defineField({
       name: "framedEnabled",
       title: "Offer Framed Option",
       type: "boolean",
