@@ -189,12 +189,14 @@ export default defineConfig({
               context,
             }),
 
-            orderableDocumentListDeskItem({
-              type: "printSet",
-              title: "Print Sets",
-              S,
-              context,
-            }),
+            // V1 Print Sets hidden — 2 docs remain but will be recreated as
+            // lumaPrintSetV2 and deleted. See "Shop V2 (Print Sets)" below.
+            // orderableDocumentListDeskItem({
+            //   type: "printSet",
+            //   title: "Print Sets",
+            //   S,
+            //   context,
+            // }),
 
             S.listItem()
               .title("Coupons")
