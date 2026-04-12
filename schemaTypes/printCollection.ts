@@ -18,6 +18,11 @@ export const printCollection = defineType({
   title: "Print Collection",
   type: "document",
 
+  groups: [
+    { name: "content", title: "Content", default: true },
+    { name: "settings", title: "Settings" },
+  ],
+
   fields: [
     orderRankField({ type: "printCollection" }),
 
@@ -25,6 +30,7 @@ export const printCollection = defineType({
       name: "title",
       title: "Title",
       type: "string",
+      group: "content",
       validation: (rule) => rule.required(),
     }),
 
@@ -32,6 +38,7 @@ export const printCollection = defineType({
       name: "slug",
       title: "Slug",
       type: "slug",
+      group: "content",
       options: {
         source: "title",
         maxLength: 96,
@@ -43,6 +50,7 @@ export const printCollection = defineType({
       name: "parent",
       title: "Parent Collection",
       type: "reference",
+      group: "settings",
       to: [{ type: "printCollection" }],
       description:
         "Leave empty for top-level collections. Reference a parent to nest this collection.",
@@ -52,6 +60,7 @@ export const printCollection = defineType({
       name: "previewImage",
       title: "Preview Image",
       type: "image",
+      group: "content",
       options: {
         hotspot: true,
       },
@@ -69,12 +78,14 @@ export const printCollection = defineType({
       title: "Description",
       type: "text",
       rows: 3,
+      group: "content",
     }),
 
     defineField({
       name: "featured",
       title: "Featured",
       type: "boolean",
+      group: "settings",
       initialValue: false,
     }),
   ],

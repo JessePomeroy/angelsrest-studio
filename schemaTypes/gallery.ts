@@ -18,6 +18,13 @@ export const gallery = defineType({
   // Document type (as opposed to 'object' which is embedded)
   type: "document",
 
+  groups: [
+    { name: "content", title: "Content", default: true },
+    { name: "details", title: "Details" },
+    { name: "settings", title: "Settings" },
+    { name: "seo", title: "SEO" },
+  ],
+
   fields: [
     // Hidden field that stores the sort order for drag-and-drop
     // Query with: | order(orderRank)
@@ -27,28 +34,27 @@ export const gallery = defineType({
       name: "title",
       title: "Title",
       type: "string",
+      group: "content",
       validation: (rule) => rule.required(),
     }),
 
-    // Slug is auto-generated from title, used in URLs
-    // e.g., "Film Diary" → "film-diary" → /gallery/film-diary
     defineField({
       name: "slug",
       title: "Slug",
       type: "slug",
+      group: "content",
       options: {
-        source: "title", // Auto-generate from title field
+        source: "title",
         maxLength: 96,
       },
       validation: (rule) => rule.required(),
     }),
 
-    // Array of images with optional alt text for accessibility
-    // Displayed as a visual grid in the Studio
     defineField({
       name: "images",
       title: "Images",
       type: "array",
+      group: "content",
       of: [
         {
           type: "image",
@@ -76,14 +82,15 @@ export const gallery = defineType({
       title: "Description",
       type: "text",
       rows: 3,
+      group: "content",
       description: "Brief description of this gallery",
     }),
 
-    // Category dropdown for filtering/organization
     defineField({
       name: "category",
       title: "Category",
       type: "string",
+      group: "details",
       options: {
         list: [
           { title: "Portrait", value: "portrait" },
@@ -95,27 +102,28 @@ export const gallery = defineType({
       },
     }),
 
-    // Flexible tags for additional categorization
     defineField({
       name: "tags",
       title: "Tags",
       type: "array",
+      group: "details",
       of: [{ type: "string" }],
-      options: { layout: "tags" }, // Renders as tag pills
+      options: { layout: "tags" },
     }),
 
     defineField({
       name: "date",
       title: "Date",
       type: "date",
+      group: "details",
       description: "When was this gallery created/shot?",
     }),
 
-    // Featured galleries can be highlighted on homepage
     defineField({
       name: "featured",
       title: "Featured",
       type: "boolean",
+      group: "settings",
       initialValue: false,
       description: "Show this gallery on the homepage?",
     }),
@@ -124,6 +132,7 @@ export const gallery = defineType({
       name: "isVisible",
       title: "Visible on Site",
       type: "boolean",
+      group: "settings",
       initialValue: true,
       description: "Uncheck to hide this gallery from the public site",
     }),
@@ -132,6 +141,7 @@ export const gallery = defineType({
       name: "seo",
       title: "SEO",
       type: "object",
+      group: "seo",
       fields: [
         {
           name: "description",

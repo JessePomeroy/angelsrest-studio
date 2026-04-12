@@ -11,13 +11,19 @@ import { defineField, defineType } from "sanity";
 import { paperOptions } from "./constants/paperOptions";
 
 export const product = defineType({
-  // API name — used in GROQ queries: *[_type == "product"]
   name: "product",
   title: "Product",
   type: "document",
 
+  groups: [
+    { name: "content", title: "Content", default: true },
+    { name: "pricing", title: "Pricing" },
+    { name: "digital", title: "Digital" },
+    { name: "settings", title: "Settings" },
+    { name: "seo", title: "SEO" },
+  ],
+
   fields: [
-    // Order rank for drag-and-drop ordering in Studio
     defineField({
       name: "orderRank",
       title: "Order Rank",
@@ -29,14 +35,15 @@ export const product = defineType({
       name: "title",
       title: "Title",
       type: "string",
+      group: "content",
       validation: (rule) => rule.required(),
     }),
 
-    // URL-friendly identifier, auto-generated from title
     defineField({
       name: "slug",
       title: "Slug",
       type: "slug",
+      group: "content",
       options: {
         source: "title",
         maxLength: 96,
@@ -44,11 +51,11 @@ export const product = defineType({
       validation: (rule) => rule.required(),
     }),
 
-    // Product images — first image is used as the main photo
     defineField({
       name: "images",
       title: "Images",
       type: "array",
+      group: "content",
       of: [
         {
           type: "image",
@@ -73,23 +80,23 @@ export const product = defineType({
       title: "Description",
       type: "text",
       rows: 4,
+      group: "content",
       description: "Product details, materials, dimensions, etc.",
     }),
 
-    // Price in dollars (or your currency)
-    // Stored as number for calculations; format in frontend
     defineField({
       name: "price",
       title: "Price",
       type: "number",
+      group: "pricing",
       validation: (rule) => rule.positive(),
       description: "Base price in USD. Optional if paper-specific prices are set.",
     }),
 
-    // Product category for filtering
     defineField({
       name: "category",
       title: "Category",
+      group: "pricing",
       type: "string",
       options: {
         list: [
@@ -102,21 +109,21 @@ export const product = defineType({
       },
     }),
 
-    // Collection reference - only for Prints category
     defineField({
       name: "collection",
       title: "Print Collection",
       type: "reference",
+      group: "settings",
       to: [{ type: "printCollection" }],
       hidden: ({ parent }) => parent?.category !== "prints",
       description: "Link this print to a collection (shown on /shop/prints/[slug])",
     }),
 
-    // Fulfillment type — determines if order is auto-sent to LumaPrints or handled manually
     defineField({
       name: "fulfillmentType",
       title: "Fulfillment Type",
       type: "string",
+      group: "pricing",
       options: {
         list: [
           { title: "LumaPrints", value: "lumaprints" },
@@ -128,11 +135,11 @@ export const product = defineType({
         "LumaPrints = auto-submit when order is placed. Self = handle fulfillment manually.",
     }),
 
-    // Available paper types for LumaPrints (shown as options on product page)
     defineField({
       name: "availablePapers",
       title: "Available Paper Types",
       type: "array",
+      group: "pricing",
       of: [
         {
           type: "object",
@@ -176,11 +183,11 @@ export const product = defineType({
       description: "Add paper options. All sizes are 2:3 ratio for your images.",
     }),
 
-    // Digital product file (only shown for digital category)
     defineField({
       name: "digitalFile",
       title: "Digital Download File",
       type: "file",
+      group: "digital",
       description: "Upload the zip/file buyers will download after purchase",
       hidden: ({ parent }) => parent?.category !== "digital",
       options: {
@@ -192,23 +199,24 @@ export const product = defineType({
       name: "digitalFileVersion",
       title: "Version",
       type: "string",
+      group: "digital",
       description: 'e.g., "1.0.0" - shown to buyers so they know if there are updates',
       hidden: ({ parent }) => parent?.category !== "digital",
     }),
 
-    // Inventory status — hide out-of-stock items or show "Sold Out"
     defineField({
       name: "inStock",
       title: "In Stock",
       type: "boolean",
+      group: "settings",
       initialValue: true,
     }),
 
-    // Featured products can be highlighted on homepage or shop page
     defineField({
       name: "featured",
       title: "Featured",
       type: "boolean",
+      group: "settings",
       initialValue: false,
       description: "Highlight this product?",
     }),
@@ -217,6 +225,7 @@ export const product = defineType({
       name: "seo",
       title: "SEO",
       type: "object",
+      group: "seo",
       fields: [
         {
           name: "description",

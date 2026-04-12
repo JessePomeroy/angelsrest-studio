@@ -36,11 +36,19 @@ export const lumaPrintSetV2 = defineType({
   title: "Print Set (V2)",
   type: "document",
 
+  groups: [
+    { name: "content", title: "Content", default: true },
+    { name: "collection", title: "Collection" },
+    { name: "pricing", title: "Pricing" },
+    { name: "settings", title: "Settings" },
+  ],
+
   fields: [
     defineField({
       name: "title",
       title: "Title",
       type: "string",
+      group: "content",
       validation: (rule) => rule.required(),
     }),
 
@@ -48,6 +56,7 @@ export const lumaPrintSetV2 = defineType({
       name: "slug",
       title: "Slug",
       type: "slug",
+      group: "content",
       options: { source: "title", maxLength: 96 },
       validation: (rule) => rule.required(),
     }),
@@ -58,6 +67,7 @@ export const lumaPrintSetV2 = defineType({
       description:
         "Hero / cover shot for shop listings. Optional — falls back to the first image in the set if not set. This image is NOT printed.",
       type: "image",
+      group: "content",
       options: { hotspot: true },
       fields: [{ name: "alt", type: "string", title: "Alternative text" }],
     }),
@@ -67,12 +77,14 @@ export const lumaPrintSetV2 = defineType({
       title: "Description",
       type: "text",
       rows: 4,
+      group: "content",
       description: "Shown on the set detail page. Story behind the bundle.",
     }),
 
     defineField({
       name: "images",
       title: "Set Images",
+      group: "content",
       description:
         "The photographs in the set. Every image here gets printed when a customer buys the set. Order matters — this is the display order on the product page.",
       type: "array",
@@ -92,6 +104,7 @@ export const lumaPrintSetV2 = defineType({
       name: "parent",
       title: "Parent Collection",
       type: "reference",
+      group: "collection",
       to: [{ type: "printCollection" }],
       description: "Optional: link this set to a print collection.",
     }),
@@ -99,6 +112,7 @@ export const lumaPrintSetV2 = defineType({
     defineField({
       name: "variants",
       title: "Variants",
+      group: "pricing",
       description:
         "Each variant is one paper + size combo applied to the entire set. The retail price below is the price for the WHOLE bundle (not per print). The margin display factors in the per-print wholesale cost × the number of images in the set.",
       type: "array",
@@ -163,6 +177,7 @@ export const lumaPrintSetV2 = defineType({
       name: "inStock",
       title: "In Stock",
       type: "boolean",
+      group: "settings",
       initialValue: true,
     }),
 
@@ -170,6 +185,7 @@ export const lumaPrintSetV2 = defineType({
       name: "featured",
       title: "Featured",
       type: "boolean",
+      group: "settings",
       initialValue: false,
       description: "Highlight this set on the homepage or shop page?",
     }),

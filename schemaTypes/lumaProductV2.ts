@@ -34,11 +34,18 @@ export const lumaProductV2 = defineType({
   title: "Print Product (V2)",
   type: "document",
 
+  groups: [
+    { name: "content", title: "Content", default: true },
+    { name: "pricing", title: "Pricing" },
+    { name: "settings", title: "Settings" },
+  ],
+
   fields: [
     defineField({
       name: "title",
       title: "Title",
       type: "string",
+      group: "content",
       validation: (rule) => rule.required(),
     }),
 
@@ -46,6 +53,7 @@ export const lumaProductV2 = defineType({
       name: "slug",
       title: "Slug",
       type: "slug",
+      group: "content",
       options: { source: "title", maxLength: 96 },
       validation: (rule) => rule.required(),
     }),
@@ -55,6 +63,7 @@ export const lumaProductV2 = defineType({
       title: "Photo",
       description: "The photograph that gets printed. This is the file LumaPrints prints from.",
       type: "image",
+      group: "content",
       options: { hotspot: true },
       fields: [{ name: "alt", type: "string", title: "Alternative text" }],
       validation: (rule) => rule.required(),
@@ -65,12 +74,14 @@ export const lumaProductV2 = defineType({
       title: "Description",
       type: "text",
       rows: 4,
+      group: "content",
       description: "Shown on the product detail page. Story behind the photo, location, etc.",
     }),
 
     defineField({
       name: "variants",
       title: "Variants",
+      group: "pricing",
       description:
         "Each variant is one paper + size combo. Add the variants you want to sell, set retail prices, and toggle enabled. Wholesale cost and margin display next to each price field.",
       type: "array",
@@ -134,6 +145,7 @@ export const lumaProductV2 = defineType({
       name: "inStock",
       title: "In Stock",
       type: "boolean",
+      group: "settings",
       initialValue: true,
     }),
 
@@ -141,6 +153,7 @@ export const lumaProductV2 = defineType({
       name: "featured",
       title: "Featured",
       type: "boolean",
+      group: "settings",
       initialValue: false,
       description: "Highlight this product on the homepage or shop page?",
     }),
