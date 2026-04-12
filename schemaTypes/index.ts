@@ -20,6 +20,7 @@ import { coupon } from "./coupon";
 // Custom schemas for the photographer studio
 import { gallery } from "./gallery";
 import { inquiry } from "./inquiry";
+import { lumaPrintSetV2 } from "./lumaPrintSetV2";
 import { lumaProductV2 } from "./lumaProductV2";
 import { order } from "./order";
 import post from "./post";
@@ -36,6 +37,7 @@ export const schemaTypes = [
   coupon, // Discount codes
   product, // Shop products (legacy — replaced by lumaProductV2 once SHOP_V2_ENABLED flips)
   lumaProductV2, // Shop V2 print products with paper × size variant matrix and inline cost/margin
+  lumaPrintSetV2, // Shop V2 print sets — N images per bundle, per-set retail prices, image-count-aware margin
   about, // About page content
   order, // Order history
 

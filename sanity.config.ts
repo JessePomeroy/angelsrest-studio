@@ -205,6 +205,15 @@ export default defineConfig({
                   .defaultOrdering([{ field: "_createdAt", direction: "desc" }]),
               ),
 
+            S.listItem()
+              .title("Shop V2 (Print Sets)")
+              .schemaType("lumaPrintSetV2")
+              .child(
+                S.documentTypeList("lumaPrintSetV2")
+                  .title("Print Sets (V2)")
+                  .defaultOrdering([{ field: "_createdAt", direction: "desc" }]),
+              ),
+
             S.divider(),
 
             // ═══════════════════════════════════════
