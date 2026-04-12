@@ -191,11 +191,11 @@ export default defineConfig({
                   .title("Products")
                   .items([
                     S.listItem()
-                      .title("Print Products")
+                      .title("Prints")
                       .schemaType("lumaProductV2")
                       .child(
                         S.documentTypeList("lumaProductV2")
-                          .title("Print Products")
+                          .title("Prints")
                           .defaultOrdering([{ field: "_createdAt", direction: "desc" }]),
                       ),
                     S.listItem()
