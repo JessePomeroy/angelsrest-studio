@@ -238,18 +238,18 @@ export default defineConfig({
             S.divider(),
 
             // ═══════════════════════════════════════
-            // Shop V2 (audit #23 — behind SHOP_V2_ENABLED flag)
+            // Prints
             // ═══════════════════════════════════════
             listWithEmptyState(
               "lumaProductV2",
-              "Shop V2 (Print Products)",
+              "Print Products",
               "No print products yet",
               "Print products are individual photographs you sell as prints. Each product has one photo and multiple paper × size variants with pricing. Create your first print product to start selling.",
             ),
 
             listWithEmptyState(
               "lumaPrintSetV2",
-              "Shop V2 (Print Sets)",
+              "Print Sets",
               "No print sets yet",
               "Print sets are curated bundles of photographs sold together at a set price. Add your images, pick paper × size variants, and set bundle pricing.",
             ),
