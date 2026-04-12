@@ -16,6 +16,7 @@ import { defineConfig } from "sanity";
 import { presentationTool } from "sanity/presentation";
 import { structureTool } from "sanity/structure";
 import DocumentsPane from "sanity-plugin-documents-pane";
+import { media } from "sanity-plugin-media";
 import { clientConfig } from "./client.config";
 import { schemaTypes } from "./schemaTypes";
 import { MarkBackInStockAction } from "./schemaTypes/actions/MarkBackInStockAction";
@@ -390,6 +391,7 @@ export default defineConfig({
     }),
 
     visionTool(),
+    media(),
   ],
 
   schema: {
