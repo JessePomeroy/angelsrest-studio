@@ -6,56 +6,26 @@ interface Stats {
   galleries: number;
   totalImages: number;
   products: number;
-  newInquiries: number;
-  recentOrders: number;
-}
-
-interface RecentOrder {
-  _id: string;
-  orderNumber: string;
-  customerEmail: string;
-  total: number;
-  status: string;
-  createdAt: string;
+  printProducts: number;
 }
 
 const STATS_QUERY = `{
   "galleries": count(*[_type == "gallery"]),
   "totalImages": count(*[_type == "gallery"].images[]),
   "products": count(*[_type == "product" && inStock == true]),
-  "newInquiries": count(*[_type == "inquiry" && status == "new"]),
-  "recentOrders": count(*[_type == "order" && createdAt >= $weekAgo])
+  "printProducts": count(*[_type == "lumaProductV2" && inStock == true])
 }`;
-
-const RECENT_ORDERS_QUERY = `*[_type == "order"] | order(createdAt desc) [0...5] {
-  _id, orderNumber, customerEmail, total, status, createdAt
-}`;
-
-const STATUS_COLORS: Record<string, string> = {
-  new: "#6366f1",
-  printing: "#f59e0b",
-  ready: "#8b5cf6",
-  shipped: "#3b82f6",
-  delivered: "#22c55e",
-  refunded: "#ef4444",
-};
 
 export function DashboardHome() {
   const client = useClient({ apiVersion: "2024-01-01" });
   const [stats, setStats] = useState<Stats | null>(null);
-  const [orders, setOrders] = useState<RecentOrder[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-
-    Promise.all([client.fetch(STATS_QUERY, { weekAgo }), client.fetch(RECENT_ORDERS_QUERY)]).then(
-      ([statsResult, ordersResult]) => {
-        setStats(statsResult);
-        setOrders(ordersResult);
-        setLoading(false);
-      },
-    );
+    client.fetch(STATS_QUERY).then((result) => {
+      setStats(result);
+      setLoading(false);
+    });
   }, [client]);
 
   if (loading) {
@@ -75,53 +45,8 @@ export function DashboardHome() {
       <div style={styles.grid}>
         <StatCard label="Galleries" value={stats?.galleries ?? 0} />
         <StatCard label="Total Images" value={stats?.totalImages ?? 0} />
-        <StatCard label="Products" value={stats?.products ?? 0} suffix="in stock" />
-        <StatCard
-          label="New Inquiries"
-          value={stats?.newInquiries ?? 0}
-          highlight={!!stats?.newInquiries}
-        />
-        <StatCard label="Orders This Week" value={stats?.recentOrders ?? 0} />
-      </div>
-
-      {/* Recent Orders */}
-      <div style={styles.section}>
-        <h2 style={styles.sectionTitle}>Recent Orders</h2>
-        {orders.length === 0 ? (
-          <p style={styles.empty}>No orders yet.</p>
-        ) : (
-          <table style={styles.table}>
-            <thead>
-              <tr>
-                <th style={styles.th}>Order</th>
-                <th style={styles.th}>Customer</th>
-                <th style={styles.th}>Total</th>
-                <th style={styles.th}>Status</th>
-                <th style={styles.th}>Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {orders.map((order) => (
-                <tr key={order._id}>
-                  <td style={styles.td}>{order.orderNumber}</td>
-                  <td style={styles.td}>{order.customerEmail}</td>
-                  <td style={styles.td}>${((order.total ?? 0) / 100).toFixed(2)}</td>
-                  <td style={styles.td}>
-                    <span
-                      style={{
-                        ...styles.badge,
-                        backgroundColor: STATUS_COLORS[order.status] ?? "#6b7280",
-                      }}
-                    >
-                      {order.status}
-                    </span>
-                  </td>
-                  <td style={styles.td}>{new Date(order.createdAt).toLocaleDateString()}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+        <StatCard label="Print Products" value={stats?.printProducts ?? 0} suffix="in stock" />
+        <StatCard label="Other Products" value={stats?.products ?? 0} suffix="in stock" />
       </div>
 
       {/* Quick Actions */}
@@ -145,6 +70,9 @@ export function DashboardHome() {
             Admin Dashboard
           </a>
         </div>
+        <p style={{ ...styles.empty, marginTop: "1rem" }}>
+          Orders and inquiries are managed in the Admin Dashboard.
+        </p>
       </div>
     </div>
   );
@@ -236,32 +164,6 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: 600,
     color: "#fff",
     marginBottom: "1rem",
-  },
-  table: {
-    width: "100%",
-    borderCollapse: "collapse" as const,
-  },
-  th: {
-    textAlign: "left" as const,
-    padding: "0.5rem 0.75rem",
-    fontSize: "0.75rem",
-    textTransform: "uppercase" as const,
-    letterSpacing: "0.05em",
-    color: "#999",
-    borderBottom: "1px solid #333",
-  },
-  td: {
-    padding: "0.6rem 0.75rem",
-    fontSize: "0.875rem",
-    borderBottom: "1px solid #222",
-  },
-  badge: {
-    display: "inline-block",
-    padding: "2px 8px",
-    borderRadius: "4px",
-    fontSize: "0.75rem",
-    color: "#fff",
-    fontWeight: 500,
   },
   empty: {
     color: "#666",

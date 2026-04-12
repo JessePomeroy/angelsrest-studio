@@ -19,10 +19,8 @@ import { contactPage } from "./contactPage";
 import { coupon } from "./coupon";
 // Custom schemas for the photographer studio
 import { gallery } from "./gallery";
-import { inquiry } from "./inquiry";
 import { lumaPrintSetV2 } from "./lumaPrintSetV2";
 import { lumaProductV2 } from "./lumaProductV2";
-import { order } from "./order";
 import post from "./post";
 import { printCollection } from "./printCollection";
 import { printSet } from "./printSet";
@@ -39,14 +37,10 @@ export const schemaTypes = [
   lumaProductV2, // Shop V2 print products with paper × size variant matrix and inline cost/margin
   lumaPrintSetV2, // Shop V2 print sets — N images per bundle, per-set retail prices, image-count-aware margin
   about, // About page content
-  order, // Order history
 
   // === Singletons ===
   siteSettings, // Global site configuration
   contactPage, // Contact & booking page
-
-  // === Form Submissions ===
-  inquiry, // Contact form submissions (read-only)
 
   // === Blog Content Types ===
   // Ready for future blog implementation
