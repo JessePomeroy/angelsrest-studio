@@ -23,7 +23,6 @@ import { lumaPrintSetV2 } from "./lumaPrintSetV2";
 import { lumaProductV2 } from "./lumaProductV2";
 import post from "./post";
 import { printCollection } from "./printCollection";
-import { printSet } from "./printSet";
 import { product } from "./product";
 import { siteSettings } from "./siteSettings";
 
@@ -31,7 +30,6 @@ export const schemaTypes = [
   // === Custom Content Types ===
   gallery, // Photo galleries with ordering
   printCollection, // Print collections for shop
-  printSet, // Print sets (bundles)
   coupon, // Discount codes
   product, // Shop products (postcards, tapestries, digital, merchandise — prints use lumaProductV2)
   lumaProductV2, // Shop V2 print products with paper × size variant matrix and inline cost/margin
