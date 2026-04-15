@@ -14,6 +14,7 @@
 import { orderRankField } from "@sanity/orderable-document-list";
 import { defineField, defineType } from "sanity";
 import { paperOptions } from "./constants/paperOptions";
+import { PRODUCT_CATEGORIES } from "./shared/categoryOptions";
 
 export const printSet = defineType({
   name: "printSet",
@@ -107,13 +108,7 @@ export const printSet = defineType({
       title: "Category",
       type: "string",
       options: {
-        list: [
-          { title: "Prints", value: "prints" },
-          { title: "Postcards", value: "postcards" },
-          { title: "Tapestries", value: "tapestries" },
-          { title: "Digital", value: "digital" },
-          { title: "Merchandise", value: "merchandise" },
-        ],
+        list: PRODUCT_CATEGORIES,
       },
     }),
 
