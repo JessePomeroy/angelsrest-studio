@@ -20,19 +20,23 @@ Sanity Studio for angelsrest.online. Manages all CMS content and serves as the c
 | Type | Purpose | Notes |
 |---|---|---|
 | `gallery` | Photo galleries | Orderable, has SEO + isVisible fields |
-| `product` | Shop products | Orderable, has SEO fields, paper options for LumaPrints |
+| `product` | Shop products (postcards, tapestries, digital, merch) | Orderable, has SEO fields |
+| `lumaProductV2` | Shop V2 print products | Paper × size variant matrix, inline cost/margin |
+| `lumaPrintSetV2` | Shop V2 print sets | N-image bundles with per-set retail + image-count margin |
 | `printCollection` | Hierarchical print groupings | Orderable, supports nesting via parent ref |
-| `printSet` | Bundled print sets | Orderable |
-| `order` | Purchase records | Auto-created by Stripe webhook (migrating to Convex) |
 | `coupon` | Discount codes | Tracks usage counts |
 | `about` | About page (singleton) | Has SEO fields |
 | `siteSettings` | Global site config (singleton) | Artist name, title, social links, default SEO |
 | `contactPage` | Contact & booking config (singleton) | Conditional booking fields |
-| `inquiry` | Contact form submissions | Read-only, status workflow (new/read/replied) |
 | `post` | Blog posts | 5 template types with conditional fields |
 | `author` | Blog authors | |
 | `category` | Blog categories | |
 | `blockContent` | Portable Text definition | |
+
+> Orders and inquiries are **Convex-owned**, not Sanity. They used to live here;
+> the schemas were removed as part of audit #50. Operational data (orders,
+> inquiries, CRM) lives in Convex; content data (galleries, products, pages)
+> lives in Sanity. See `feedback_sanity_vs_admin_split` for the split rule.
 
 ---
 
@@ -50,12 +54,6 @@ Angel's Rest
 │   ├── Print Collections — Orderable
 │   ├── Print Sets     — Orderable
 │   └── Coupons
-├── ── Inquiries ──
-│   ├── New            — Filtered: status == "new"
-│   └── All Inquiries
-├── ── Orders ──
-│   ├── All Orders
-│   ├── Today / This Week / This Month / This Year
 ├── ── Blog ──
 │   ├── Posts / Authors / Categories
 └── ── Settings ──
@@ -130,18 +128,15 @@ npx sanity manage # Open Sanity project dashboard
 # Single document by slug
 *[_type == "post" && slug.current == $slug][0]
 
-# New inquiry count
-count(*[_type == "inquiry" && status == "new"])
-
 # Site settings singleton
 *[_type == "siteSettings"][0]
 
-# Dashboard stats
+# Dashboard stats (matches src/components/DashboardHome.tsx)
 {
   "galleries": count(*[_type == "gallery"]),
   "totalImages": count(*[_type == "gallery"].images[]),
   "products": count(*[_type == "product" && inStock == true]),
-  "newInquiries": count(*[_type == "inquiry" && status == "new"])
+  "printProducts": count(*[_type == "lumaProductV2" && inStock == true])
 }
 ```
 
@@ -151,8 +146,8 @@ count(*[_type == "inquiry" && status == "new"])
 
 This studio is part of the photographer CRM platform:
 - **angelsrest** = your personal site + platform hub
-- **angelsrest-studio** = your Sanity CMS (content only)
-- **Convex** = operational backend (orders, CRM, messages, tiers) — coming soon
-- **admin-dashboard** = shared admin package for all client sites — coming soon
+- **angelsrest-studio** = your Sanity CMS (content only — galleries, products, pages)
+- **Convex** = operational backend (orders, inquiries, CRM, messages, tiers)
+- **admin-dashboard** (`@jessepomeroy/admin`) = shared admin package consumed by all client sites
 
 See full spec: `~/Documents/quilt/02_reference/projects/photographer_crm/implementation-spec.md`
