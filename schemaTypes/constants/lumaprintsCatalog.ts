@@ -14,7 +14,7 @@
  * `~/Documents/quilt/02_reference/lumaprints-api-reference.md`.
  *
  * Catalog availability verified 2026-04-10 against the LumaPrints production
- * shipping pricing API via `angelsrest/scripts/verify-lumaprints-catalog.ts`
+ * shipping pricing API via `scripts/verify-lumaprints-catalog.ts`
  * — all 7 papers × 27 sizes = 189 combinations are accepted by the API.
  * Only the 54 combinations with published wholesale costs are seeded here
  * (9 sizes × 6 papers). Add more as cost data becomes available — no schema
