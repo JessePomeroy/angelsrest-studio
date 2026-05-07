@@ -5,8 +5,7 @@
  * the photographer's actual take-home per unit, factoring in:
  *   - LumaPrints wholesale cost (looked up from `constants/lumaprintsCatalog.ts`)
  *   - Stripe processing fees (default 2.9% + $0.30)
- *   - Platform fee (default 0% in angelsrest-studio, 5% in client studios
- *     when the Stripe Connect platform fee ships per priority roadmap #6)
+ *   - Platform fee (default 0%, override via env var for Stripe Connect)
  *
  * Refreshed 2026-04-11 (margin calculator drive-by, refactor audit). The
  * previous version showed gross margin (retail - wholesale) and ignored
@@ -17,8 +16,8 @@
  *
  * Per-studio configuration via env vars (Sanity studio reads them via
  * import.meta.env at build time):
- *   - SANITY_STUDIO_PLATFORM_FEE_PCT — defaults to 0 in angelsrest-studio.
- *     Client studio repos override this to 0.05 once Stripe Connect ships.
+ *   - SANITY_STUDIO_PLATFORM_FEE_PCT — defaults to 0. Set to 0.05 for
+ *     client studios using Stripe Connect platform fee.
  *   - SANITY_STUDIO_STRIPE_FEE_PCT — defaults to 0.029 (US Stripe rate).
  *   - SANITY_STUDIO_STRIPE_FEE_FIXED_CENTS — defaults to 30 ($0.30 US).
  *
