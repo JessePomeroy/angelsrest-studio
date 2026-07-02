@@ -28,7 +28,7 @@
 import {
   buildFramedMarginSummary,
   buildMarginSummary,
-  computeFeeBreakdown as computeSharedFeeBreakdown,
+  computeFeeBreakdown as computeFeeBreakdownWithConfig,
   type FeeBreakdown,
   type PrintFeeConfig,
 } from "@jessepomeroy/print-catalog/pricing";
@@ -51,17 +51,10 @@ interface DocumentContext {
 // — Sanity studio inlines these at build time, so changing them requires
 // a studio rebuild + redeploy. That's the right cadence for a fee config:
 // stable across the day-to-day editing experience.
-const PLATFORM_FEE_PCT = parseFloat(import.meta.env.SANITY_STUDIO_PLATFORM_FEE_PCT ?? "0");
-const STRIPE_FEE_PCT = parseFloat(import.meta.env.SANITY_STUDIO_STRIPE_FEE_PCT ?? "0.029");
-const STRIPE_FEE_FIXED_CENTS = parseInt(
-  import.meta.env.SANITY_STUDIO_STRIPE_FEE_FIXED_CENTS ?? "30",
-  10,
-);
-
-const FEE_CONFIG: PrintFeeConfig = {
-  platformFeePct: PLATFORM_FEE_PCT,
-  stripeFeePct: STRIPE_FEE_PCT,
-  stripeFeeFixedCents: STRIPE_FEE_FIXED_CENTS,
+export const FEE_CONFIG: PrintFeeConfig = {
+  platformFeePct: parseFloat(import.meta.env.SANITY_STUDIO_PLATFORM_FEE_PCT ?? "0"),
+  stripeFeePct: parseFloat(import.meta.env.SANITY_STUDIO_STRIPE_FEE_PCT ?? "0.029"),
+  stripeFeeFixedCents: parseInt(import.meta.env.SANITY_STUDIO_STRIPE_FEE_FIXED_CENTS ?? "30", 10),
 };
 
 /**
@@ -69,7 +62,7 @@ const FEE_CONFIG: PrintFeeConfig = {
  * (no tests yet — Sanity studios don't have a vitest setup).
  */
 export function computeFeeBreakdown(retail: number, wholesale: number): FeeBreakdown {
-  return computeSharedFeeBreakdown(retail, wholesale, FEE_CONFIG);
+  return computeFeeBreakdownWithConfig(retail, wholesale, FEE_CONFIG);
 }
 
 export function RetailPriceWithMargin(props: FieldProps) {
@@ -108,9 +101,9 @@ export function RetailPriceWithMargin(props: FieldProps) {
       framedSummary = buildFramedMarginSummary({
         retail,
         wholesale: cost,
+        feeConfig: FEE_CONFIG,
         frameCost,
         frameMarkupMultiplier: doc.frameMarkupMultiplier ?? 2,
-        feeConfig: FEE_CONFIG,
       });
     }
   }

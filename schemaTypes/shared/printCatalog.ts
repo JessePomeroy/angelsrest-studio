@@ -5,5 +5,4 @@
  * the paper, size, frame, canvas, dropdown, and wholesale data now come from
  * `@jessepomeroy/print-catalog`.
  */
-
 export * from "@jessepomeroy/print-catalog";
