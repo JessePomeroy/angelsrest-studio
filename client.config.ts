@@ -38,6 +38,17 @@ export const clientConfig = {
   liveSiteUrl: "https://angelsrest.online",
   /** Admin dashboard URL (used in dashboard quick-actions) */
   adminDashboardUrl: "https://angelsrest.online/admin",
+
+  // ─── Optional content modules ───────────────────────────────────
+  /**
+   * Enable client-specific content pages without forking the shared schema set.
+   * Keep defaults off for the base photographer template; turn these on in
+   * client studios that need the corresponding frontend routes.
+   */
+  enabledSchemas: {
+    homepage: false,
+    modelingPage: false,
+  },
 } as const;
 
 export type ClientConfig = typeof clientConfig;
