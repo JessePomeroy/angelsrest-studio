@@ -25,6 +25,13 @@
  * `lumaProductV2` schema.
  */
 
+import {
+  buildFramedMarginSummary,
+  buildMarginSummary,
+  computeFeeBreakdown as computeSharedFeeBreakdown,
+  type FeeBreakdown,
+  type PrintFeeConfig,
+} from "@jessepomeroy/print-catalog/pricing";
 import { Stack, Text } from "@sanity/ui";
 import type { FieldProps } from "sanity";
 import { useFormValue } from "sanity";
@@ -51,21 +58,18 @@ const STRIPE_FEE_FIXED_CENTS = parseInt(
   10,
 );
 
-interface FeeBreakdown {
-  stripeFee: number;
-  platformFee: number;
-  takeHome: number;
-}
+const FEE_CONFIG: PrintFeeConfig = {
+  platformFeePct: PLATFORM_FEE_PCT,
+  stripeFeePct: STRIPE_FEE_PCT,
+  stripeFeeFixedCents: STRIPE_FEE_FIXED_CENTS,
+};
 
 /**
  * Pure calculation helper. Exported for unit testing in the future
  * (no tests yet — Sanity studios don't have a vitest setup).
  */
 export function computeFeeBreakdown(retail: number, wholesale: number): FeeBreakdown {
-  const stripeFee = retail * STRIPE_FEE_PCT + STRIPE_FEE_FIXED_CENTS / 100;
-  const platformFee = retail * PLATFORM_FEE_PCT;
-  const takeHome = retail - wholesale - stripeFee - platformFee;
-  return { stripeFee, platformFee, takeHome };
+  return computeSharedFeeBreakdown(retail, wholesale, FEE_CONFIG);
 }
 
 export function RetailPriceWithMargin(props: FieldProps) {
@@ -86,21 +90,12 @@ export function RetailPriceWithMargin(props: FieldProps) {
     summary = "Pick a paper and size to see wholesale cost.";
   } else if (cost === null) {
     summary = "Wholesale cost not yet in catalog for this paper × size.";
-  } else if (retail <= 0) {
-    summary = `Wholesale: $${cost.toFixed(2)} · set a retail price to see take-home.`;
-  } else if (retail < cost) {
-    const loss = cost - retail;
-    summary = `Wholesale: $${cost.toFixed(2)} · LOSS: $${loss.toFixed(2)} per unit.`;
   } else {
-    const { stripeFee, platformFee, takeHome } = computeFeeBreakdown(retail, cost);
-    if (takeHome <= 0) {
-      summary = `Wholesale: $${cost.toFixed(2)} · Stripe fee: $${stripeFee.toFixed(2)}${PLATFORM_FEE_PCT > 0 ? ` · Platform fee: $${platformFee.toFixed(2)}` : ""} · LOSS after fees: $${(-takeHome).toFixed(2)}`;
-    } else {
-      const takeHomePct = (takeHome / retail) * 100;
-      const platformFeePart =
-        PLATFORM_FEE_PCT > 0 ? ` · Platform fee: $${platformFee.toFixed(2)}` : "";
-      summary = `Wholesale: $${cost.toFixed(2)} · Stripe fee: $${stripeFee.toFixed(2)}${platformFeePart} · Take-home: $${takeHome.toFixed(2)} (${takeHomePct.toFixed(1)}%)`;
-    }
+    summary = buildMarginSummary({
+      retail,
+      wholesale: cost,
+      feeConfig: FEE_CONFIG,
+    });
   }
 
   const isCanvas = variant?.paper?.startsWith("canvas-") ?? false;
@@ -110,16 +105,13 @@ export function RetailPriceWithMargin(props: FieldProps) {
   if (doc?.framedEnabled && !isCanvas && variant?.size && cost !== null && retail > 0) {
     const frameCost = getFrameWholesaleCost(variant.size);
     if (frameCost !== null) {
-      const multiplier = doc.frameMarkupMultiplier ?? 2;
-      const frameSurcharge = frameCost * multiplier;
-      const framedRetail = retail + frameSurcharge;
-      const framedWholesale = cost + frameCost;
-      const { stripeFee: fStripeFee, takeHome: fTakeHome } = computeFeeBreakdown(
-        framedRetail,
-        framedWholesale,
-      );
-      const fPct = (fTakeHome / framedRetail) * 100;
-      framedSummary = `Framed (0.875"): retail $${framedRetail.toFixed(2)} · wholesale $${framedWholesale.toFixed(2)} · Stripe $${fStripeFee.toFixed(2)} · Take-home: $${fTakeHome.toFixed(2)} (${fPct.toFixed(1)}%)`;
+      framedSummary = buildFramedMarginSummary({
+        retail,
+        wholesale: cost,
+        frameCost,
+        frameMarkupMultiplier: doc.frameMarkupMultiplier ?? 2,
+        feeConfig: FEE_CONFIG,
+      });
     }
   }
 

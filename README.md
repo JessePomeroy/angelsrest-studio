@@ -65,6 +65,22 @@ PR-stack improvements (image thumbnails, Needs Attention, future PRs) are
 inherited automatically.** Future polish PRs against this repo can be
 cherry-picked or rebased into client repos.
 
+### GitHub Packages auth
+
+This Studio consumes private `@jessepomeroy/*` packages from GitHub Packages.
+The repo-level `.npmrc` maps the package scope to the GitHub registry, but it
+does not and should not contain a token.
+
+Before running `pnpm install` in a fresh local or deploy environment, provide a
+GitHub Packages token with `read:packages` access:
+
+```bash
+pnpm config set --location user //npm.pkg.github.com/:_authToken "$GITHUB_TOKEN"
+```
+
+For CI or hosted deploys, set `NODE_AUTH_TOKEN` or an equivalent npm auth token
+secret before dependency installation.
+
 ## Local development
 
 ```bash
