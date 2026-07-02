@@ -25,5 +25,8 @@
 # Typescript
 *.tsbuildinfo
 
+# Git hook / CLI scratch output
+/refs
+
 # Dotenv and similar local-only files
 *.local
