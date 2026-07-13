@@ -4,7 +4,7 @@
 version: 2
 updates:
   # Enable version updates for npm/pnpm
-  - package-ecosystem: "pnpm"
+  - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
@@ -12,6 +12,8 @@ updates:
       time: "09:00"
       timezone: "America/Detroit"
     open-pull-requests-limit: 10
+    # Keep grouped update PRs review-only until this repository has a required
+    # Studio CI check. Do not pair this with ungated write-capable auto-merge.
     groups:
       minor-and-patch:
         update-types:
