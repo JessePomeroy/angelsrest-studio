@@ -1,10 +1,73 @@
 # Angels Rest CMS recovery runbook
 
-Status: Gate 2 source document. R5 is unchecked. As detailed in section 7,
-Gate 3 and every backup, credential, capture, encryption, Cloudflare, billing,
-custody, restore, and cleanup effect remain blocked until three identical-byte
-reviews pass, this file is protected-merged, the merged bytes are independently
-reviewed, and the owner explicitly accepts that merged identity.
+Status: R5 is complete under the accepted simplified snapshot path only. R6
+remaining-CMS-module planning is current; no R6 import, publication, provider
+switch, rollback, restore, content mutation, deletion, or other operational
+effect is authorized.
+
+## Current accepted R5 snapshot
+
+The accepted snapshot is
+`20260815T010542Z-35132abf-61a0-46c4-a43e-2b70138a1bdd`. Its result receipt
+SHA-256 is
+`35c850f4cba7b9aa0db646215b03771156479eef86d1b6de31a7cae145a778aa`,
+and its independent result review is `B0/H0/M0`. The owner accepted that result
+after review. The normalized acceptance record SHA-256 is
+`7bd7ca7c24e9e7276eb155aca21a7fa32ff9713a35f9ac1de0ff499c8d7139dd`;
+its acceptance index SHA-256 is
+`d9b633c7e3f081539c1bf193b29e37dba821dc0ff1ed8aeba4c700a74860378f`.
+
+Accepted custody is:
+
+- ciphertext SHA-256
+  `62a64b1b663fd2a3fcc30152a3fcd973b6106e7a5889650ff47cc2c1f5e721eb`,
+  `2,273,228,482` bytes;
+- local ciphertext
+  `/home/strayblackdog/.local/state/angelsrest-recovery/custody-local/baseline/20260815T010542Z-35132abf-61a0-46c4-a43e-2b70138a1bdd/archive.tar.gz.gpg`;
+- private R2 prefix
+  `baseline/20260815T010542Z-35132abf-61a0-46c4-a43e-2b70138a1bdd/62a64b1b663fd2a3fcc30152a3fcd973b6106e7a5889650ff47cc2c1f5e721eb-sanity-production.tar.gz.gpg/`,
+  containing one manifest and nine verified ciphertext parts under the
+  externally preflighted Indefinite baseline default lock, which was not
+  re-queried during capture;
+- R2 manifest SHA-256
+  `057f5eb183b9029096da79b3b347f88fd93375e92d70686d51cf4cfc74281466`;
+- local custody `SHA256SUMS` SHA-256
+  `ae85a9bb196c958e27013460b12e47d939a14fe33419695bd61d8373da691b53`;
+- capture script SHA-256
+  `4a0897013dde4cdaa93020326d8cf726b28af2f75560ade76c9955f55be9b52b`.
+
+This was one standard Sanity production export without an editing freeze or a
+closing no-edit attestation. The accepted receipt excludes proof of full
+completeness, point-in-time edit consistency, Content Release versions,
+inaccessible or unreferenced assets, deleted documents, Studio comments and
+history, source bundles, deep graph reconciliation, native backup, continuous
+RPO, isolated restore, empirical RTO, and duplicate-JSON-key detection. The
+original deep Gate controls below are retained as historical design and are
+superseded where they conflict with this accepted simplified path; they did not
+pass and must not be represented as passed.
+
+### Recover this snapshot
+
+1. In a private temporary workspace, retrieve `MANIFEST.json` and all nine
+   ciphertext parts from the exact private R2 prefix above. Alternatively, use
+   the accepted local ciphertext when that custody is healthy.
+2. Verify the manifest's exact SHA-256 above, then verify every listed part's
+   name, size, SHA-256, and order. Require exactly nine parts with no missing or
+   extra part before concatenating them in manifest order.
+3. Verify the reassembled ciphertext is exactly `2,273,228,482` bytes and has
+   the exact ciphertext SHA-256 above.
+4. Decrypt it with the separately held recovery key. Require the resulting
+   standard Sanity archive to be `2,273,228,385` bytes with SHA-256
+   `f7731941571bf7639eed71ade7b5c0108803b240d0145d44a21120e504d13924`
+   before any separately authorized import or restore.
+5. Recover Studio source separately from Git at commit
+   `0f7841a3e4dd453b67766b13734cd28035376466`, tree
+   `677613e404d089aaf801510b9b133c02ffdf4845`; the content archive is not a
+   source-code backup. Recover other application source from its separately
+   verified Git history.
+
+No restore or import is authorized by these instructions. R6 is planning only
+until its separately required effect gates pass.
 
 This is an operator checklist, not a shell program. On 2026-08-13 the owner
 directed recovery work to favor a concise, small, elegant solution and to avoid
